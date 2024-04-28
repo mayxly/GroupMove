@@ -13,7 +13,7 @@ struct GroupMoveApp: App {
 
     var body: some Scene {
         WindowGroup {
-            PropertyItemView()
+            ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

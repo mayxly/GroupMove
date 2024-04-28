@@ -9,21 +9,7 @@ import SwiftUI
 
 struct PropertyView: View {
     var body: some View {
-        VStack {
-            List {
-                Text("Temp")
-            }
-        }
-        .navigationTitle("My Property")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-
-                } label: {
-                    Image(systemName: "plus")
-                }
-            }
-        }
+        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
 }
 
