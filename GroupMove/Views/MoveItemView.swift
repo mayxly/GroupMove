@@ -8,13 +8,13 @@
 import SwiftUI
 import CoreData
 
-struct PropertyItemView: View {
+struct MoveItemView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \PropertyItem.dateCreated, ascending: true)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \MoveItem.dateCreated, ascending: true)],
         animation: .default)
-    private var items: FetchedResults<PropertyItem>
+    private var items: FetchedResults<MoveItem>
 
     var body: some View {
         NavigationView {
@@ -83,6 +83,6 @@ private let itemFormatter: DateFormatter = {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        PropertyItemView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        MoveItemView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
