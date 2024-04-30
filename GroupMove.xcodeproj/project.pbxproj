@@ -288,7 +288,6 @@
 				6877032A2BDDCB5F00905600 /* Persistence.swift in Sources */,
 				687703232BDDCB5E00905600 /* MoveItemView.swift in Sources */,
 				687703562BDEF61300905600 /* AddPropertyView.swift in Sources */,
-				687703232BDDCB5E00905600 /* ContentView.swift in Sources */,
 				687703582BDF058A00905600 /* GridSelectorView.swift in Sources */,
 				6877032D2BDDCB5F00905600 /* GroupMove.xcdatamodeld in Sources */,
 				687703542BDEE29F00905600 /* PropertyView.swift in Sources */,
