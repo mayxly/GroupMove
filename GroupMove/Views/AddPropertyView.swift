@@ -9,6 +9,9 @@ import SwiftUI
 
 struct AddPropertyView: View {
     @Environment(\.dismiss) var done
+    @Environment(\.managedObjectContext) private var viewContext
+    
+    @State private var selectedProperty: Property?
     @State private var name = ""
     @State private var addBudget = false
     @State private var budgetAmount: Float?
@@ -86,11 +89,33 @@ struct AddPropertyView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
-                        done()
+                        saveProperty()
                     }
                 }
             }
         }
+    }
+    
+    func saveProperty() {
+        withAnimation {
+            if selectedProperty == nil {
+                selectedProperty = Property(context: viewContext)
+            }
+            
+            selectedProperty?.name = name
+            selectedProperty?.budget = budgetAmount ?? 0
+//            selectedProperty?.rooms = "kitchen;bedroom;livingroom" // TODO: add rooms
+            selectedProperty?.dateCreated = Date()
+            selectedProperty?.color = selectedColor
+            
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+        done()
     }
 }
 

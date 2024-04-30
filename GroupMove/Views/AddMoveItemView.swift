@@ -13,23 +13,32 @@ struct AddMoveItemView: View {
     
     @State private var selectedMoveItem: MoveItem?
     @State private var name: String
-    @State private var price: Int?
-    @State private var room: String
+    @State private var price: Float?
+    @State private var room: Room?
     @State private var owner: String
     
-    let rooms = ["Kitchen", "Bedroom", "Living Room"]
+    var property: Property
+    var rooms: [Room]
     
-    init(passedMoveItem: MoveItem?) {
+    init(passedMoveItem: MoveItem?, passedProperty: Property) {
+        property = passedProperty
+        if let allRooms = property.rooms?.allObjects as? [Room] {
+            rooms = allRooms
+        } else {
+            rooms = []
+        }
+        
         if let moveItem = passedMoveItem {
             _selectedMoveItem = State(initialValue: moveItem)
             _name = State(initialValue: moveItem.name ?? "")
-            _price = State(initialValue: Int(moveItem.price))
-            _room = State(initialValue: moveItem.room ?? "")
+            _price = State(initialValue: Float(moveItem.price))
+            _room = State(initialValue: moveItem.room!)
             _owner = State(initialValue: moveItem.owner ?? "")
         } else {
             _name = State(initialValue: "")
-            _room = State(initialValue: "")
+            _room = State(initialValue: nil)
             _owner = State(initialValue: "")
+            _price = State(initialValue: Float(0))
         }
     }
     
@@ -44,8 +53,12 @@ struct AddMoveItemView: View {
                 }
                 Section("Room") {
                     Picker("Room", selection: $room) {
-                        ForEach(rooms, id:\.self) {
-                            Text($0)
+                        if !rooms.isEmpty {
+                            ForEach(rooms, id:\.self) {
+                                Text($0.name ?? "Untitled")
+                            }
+                        } else {
+                            Text("Untitled").tag(Room())
                         }
                     }
                     .pickerStyle(.menu)
@@ -73,10 +86,12 @@ struct AddMoveItemView: View {
             }
             
             selectedMoveItem?.name = name
-            selectedMoveItem?.price = Int16(price ?? 0)
-            selectedMoveItem?.room = name
+            selectedMoveItem?.price = Float(price ?? 0)
+            selectedMoveItem?.room = room
             selectedMoveItem?.dateCreated = Date()
             selectedMoveItem?.owner = name
+            
+            property.addToItems(selectedMoveItem!)
             
             do {
                 try viewContext.save()
@@ -92,5 +107,5 @@ struct AddMoveItemView: View {
 
 
 #Preview {
-    AddMoveItemView(passedMoveItem: nil)
+    AddMoveItemView(passedMoveItem: nil, passedProperty: Property())
 }

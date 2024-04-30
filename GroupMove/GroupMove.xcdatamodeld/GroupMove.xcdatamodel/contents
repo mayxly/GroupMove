@@ -4,14 +4,21 @@
         <attribute name="dateCreated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="owner" optional="YES" attributeType="String"/>
-        <attribute name="price" optional="YES" attributeType="Integer 16" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="room" optional="YES" attributeType="String"/>
+        <attribute name="price" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="property" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Property" inverseName="items" inverseEntity="Property"/>
+        <relationship name="room" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Room" inverseName="moveItem" inverseEntity="Room"/>
     </entity>
-    <entity name="PropertyItem" representedClassName="PropertyItem" syncable="YES" codeGenerationType="class">
+    <entity name="Property" representedClassName="Property" syncable="YES" codeGenerationType="class">
         <attribute name="budget" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="dateCreated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="rooms" optional="YES" attributeType="String"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MoveItem" inverseName="property" inverseEntity="MoveItem"/>
+        <relationship name="rooms" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Room" inverseName="property" inverseEntity="Room"/>
+    </entity>
+    <entity name="Room" representedClassName="Room" syncable="YES" codeGenerationType="class">
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="moveItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MoveItem" inverseName="room" inverseEntity="MoveItem"/>
+        <relationship name="property" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Property" inverseName="rooms" inverseEntity="Property"/>
     </entity>
 </model>
