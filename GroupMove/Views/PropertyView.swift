@@ -13,15 +13,19 @@ struct PropertyView: View {
     
     @ObservedObject var property: Property
     
+    @State private var roomItemMap = [String: [MoveItem]]()
+    
     @State private var showingSheet = false
     
     var body: some View {
         VStack {
             List {
-                if let items = property.items?.allObjects as? [MoveItem] {
-                    ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! })) {item in
-                      Text(item.name!)
-                  }
+                ForEach(roomItemMap.sorted(by: { $0.key < $1.key }), id: \.key) { roomName, items in
+                    Section(roomName) {
+                        ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
+                            Text(item.name ?? "Untitled")
+                        }
+                    }
                 }
             }
         }
@@ -35,15 +39,38 @@ struct PropertyView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingSheet) {
+        .sheet(isPresented: $showingSheet, onDismiss: {
+            generateMapping()
+        }){
             AddMoveItemView(passedMoveItem: nil, passedProperty: property)
+        }
+        .onAppear {
+            generateMapping()
+        }
+    }
+    
+    func generateMapping() {
+        roomItemMap = [:]
+        if let items = property.items?.allObjects as? [MoveItem] {
+            for item in items {
+                let roomName = item.room?.name ?? "Untitled"
+                if roomItemMap[roomName] == nil {
+                    roomItemMap[roomName] = [item]
+                } else {
+                    roomItemMap[roomName]?.append(item)
+                }
+            }
         }
     }
 }
 
 
 struct PropertyView_Previews: PreviewProvider {
+    static var viewContext = PersistenceController.preview.container.viewContext
+    
     static var previews: some View {
-        PropertyView(property: Property()).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: viewContext)
+        
+        return PropertyView(property: property).environment(\.managedObjectContext, viewContext)
     }
 }
