@@ -107,5 +107,9 @@ struct AddMoveItemView: View {
 
 
 #Preview {
-    AddMoveItemView(passedMoveItem: nil, passedProperty: Property())
+    var viewContext = PersistenceController.preview.container.viewContext
+    
+    let property = PreviewManager.shared.getBasicProperty(context: viewContext)
+    
+    return AddMoveItemView(passedMoveItem: nil, passedProperty: property)
 }

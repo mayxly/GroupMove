@@ -13,6 +13,13 @@ struct PersistenceController {
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
+        
+        // Example
+        let newProperty = Property(context: viewContext)
+        newProperty.name = "Blair House"
+        newProperty.color = "00A5E3"
+        newProperty.dateCreated = Date()
+        
         do {
             try viewContext.save()
         } catch {

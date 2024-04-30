@@ -19,6 +19,7 @@
 		687703522BDEDDFB00905600 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703512BDEDDFB00905600 /* HomeView.swift */; };
 		687703542BDEE29F00905600 /* PropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703532BDEE29F00905600 /* PropertyView.swift */; };
 		687703562BDEF61300905600 /* AddPropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703552BDEF61300905600 /* AddPropertyView.swift */; };
+		FD658C472BE1AEBE00B6DAA1 /* PreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD658C462BE1AEBE00B6DAA1 /* PreviewManager.swift */; };
 		FDDACE6D2BE151BB00353308 /* AddMoveItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDACE6C2BE151BB00353308 /* AddMoveItemView.swift */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +57,7 @@
 		687703512BDEDDFB00905600 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		687703532BDEE29F00905600 /* PropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyView.swift; sourceTree = "<group>"; };
 		687703552BDEF61300905600 /* AddPropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPropertyView.swift; sourceTree = "<group>"; };
+		FD658C462BE1AEBE00B6DAA1 /* PreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewManager.swift; sourceTree = "<group>"; };
 		FDDACE6C2BE151BB00353308 /* AddMoveItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMoveItemView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -115,6 +117,7 @@
 		6877031F2BDDCB5E00905600 /* GroupMove */ = {
 			isa = PBXGroup;
 			children = (
+				FD658C452BE1AEA800B6DAA1 /* Shared */,
 				68653E022BE158C200B93222 /* UIExtension */,
 				687703502BDEDDCF00905600 /* Views */,
 				687703202BDDCB5E00905600 /* GroupMoveApp.swift */,
@@ -161,6 +164,14 @@
 				FDDACE6C2BE151BB00353308 /* AddMoveItemView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		FD658C452BE1AEA800B6DAA1 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				FD658C462BE1AEBE00B6DAA1 /* PreviewManager.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -295,6 +306,7 @@
 			files = (
 				6877032A2BDDCB5F00905600 /* Persistence.swift in Sources */,
 				FDDACE6D2BE151BB00353308 /* AddMoveItemView.swift in Sources */,
+				FD658C472BE1AEBE00B6DAA1 /* PreviewManager.swift in Sources */,
 				687703562BDEF61300905600 /* AddPropertyView.swift in Sources */,
 				6877032D2BDDCB5F00905600 /* GroupMove.xcdatamodeld in Sources */,
 				687703542BDEE29F00905600 /* PropertyView.swift in Sources */,
