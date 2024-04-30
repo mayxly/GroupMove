@@ -10,25 +10,22 @@ import CoreData
 
 struct PropertyView: View {
     @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \MoveItem.dateCreated, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<MoveItem>
+    
+    @ObservedObject var property: Property
     
     @State private var showingSheet = false
     
     var body: some View {
         VStack {
             List {
-                ForEach(items) { item in
-                    NavigationLink(destination: AddMoveItemView(passedMoveItem: nil)) {
-                        Text(item.name!)
-                    }
+                if let items = property.items?.allObjects as? [MoveItem] {
+                    ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! })) {item in
+                      Text(item.name!)
+                  }
                 }
             }
         }
-        .navigationTitle("My Property")
+        .navigationTitle(property.name ?? "Property")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -39,13 +36,14 @@ struct PropertyView: View {
             }
         }
         .sheet(isPresented: $showingSheet) {
-            AddMoveItemView(passedMoveItem: nil)
+            AddMoveItemView(passedMoveItem: nil, passedProperty: property)
         }
     }
 }
 
+
 struct PropertyView_Previews: PreviewProvider {
     static var previews: some View {
-        PropertyView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        PropertyView(property: Property()).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }

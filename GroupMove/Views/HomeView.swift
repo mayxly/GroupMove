@@ -8,8 +8,13 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \Property.dateCreated, ascending: true)],
+        animation: .default)
+    private var homes: FetchedResults<Property>
     
-    let homes: [String] = ["home1", "home2"]
     @State private var showingSheet = false
     
     var body: some View {
@@ -19,8 +24,8 @@ struct HomeView: View {
                     List {
                         Section() {
                             ForEach(homes, id: \.self) { home in
-                                NavigationLink(destination: PropertyView()) {
-                                    Text(home)
+                                NavigationLink(destination: PropertyView(property: home)) {
+                                    Text(home.name ?? "Property")
                                 }
                             }
                         } header: {
@@ -51,6 +56,6 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HomeView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
