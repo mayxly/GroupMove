@@ -19,6 +19,7 @@
 		687703522BDEDDFB00905600 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703512BDEDDFB00905600 /* HomeView.swift */; };
 		687703542BDEE29F00905600 /* PropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703532BDEE29F00905600 /* PropertyView.swift */; };
 		687703562BDEF61300905600 /* AddPropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703552BDEF61300905600 /* AddPropertyView.swift */; };
+		687703582BDF058A00905600 /* GridSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703572BDF058A00905600 /* GridSelectorView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		687703512BDEDDFB00905600 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		687703532BDEE29F00905600 /* PropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyView.swift; sourceTree = "<group>"; };
 		687703552BDEF61300905600 /* AddPropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPropertyView.swift; sourceTree = "<group>"; };
+		687703572BDF058A00905600 /* GridSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridSelectorView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 				687703512BDEDDFB00905600 /* HomeView.swift */,
 				687703532BDEE29F00905600 /* PropertyView.swift */,
 				687703552BDEF61300905600 /* AddPropertyView.swift */,
+				687703572BDF058A00905600 /* GridSelectorView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -286,6 +289,7 @@
 				687703232BDDCB5E00905600 /* MoveItemView.swift in Sources */,
 				687703562BDEF61300905600 /* AddPropertyView.swift in Sources */,
 				687703232BDDCB5E00905600 /* ContentView.swift in Sources */,
+				687703582BDF058A00905600 /* GridSelectorView.swift in Sources */,
 				6877032D2BDDCB5F00905600 /* GroupMove.xcdatamodeld in Sources */,
 				687703542BDEE29F00905600 /* PropertyView.swift in Sources */,
 				687703522BDEDDFB00905600 /* HomeView.swift in Sources */,

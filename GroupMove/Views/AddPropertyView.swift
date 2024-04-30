@@ -9,11 +9,33 @@ import SwiftUI
 
 struct AddPropertyView: View {
     @Environment(\.dismiss) var done
+    @State private var name = ""
+    @State private var addBudget = false
+    @State private var budgetAmount: Double?
+    
+    @State var colorSelection: String = "🍎"
+    let emojis = [
+      "🍎", "🍌", "🍇", "🍐", "🍒", "🍑",
+      "😀", "🥶", "🥺", "🤥", "🤢", "🤤",
+      "🐶", "🐭", "🐣", "🙉", "🐸", "🦄",
+      "⚽️", "🏀", "⚾️", "🥎", "🏐", "🎱",
+    ]
     
     var body: some View {
         NavigationView {
             VStack {
-                Text("Adding property now")
+                Form {
+                    Section {
+                        TextField("Property Name", text: $name)
+                    }
+                    Section {
+                        Toggle("Add Budget", isOn: $addBudget)
+                        if addBudget {
+                            TextField("$0.00", value: $budgetAmount, format: .number)
+                                .keyboardType(.decimalPad)
+                        }
+                    }
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
