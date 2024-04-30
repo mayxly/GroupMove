@@ -18,6 +18,7 @@
 		687703442BDDCB6000905600 /* GroupMoveUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703432BDDCB6000905600 /* GroupMoveUITestsLaunchTests.swift */; };
 		687703522BDEDDFB00905600 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703512BDEDDFB00905600 /* HomeView.swift */; };
 		687703542BDEE29F00905600 /* PropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703532BDEE29F00905600 /* PropertyView.swift */; };
+		FDDACE6D2BE151BB00353308 /* AddMoveItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDACE6C2BE151BB00353308 /* AddMoveItemView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		687703432BDDCB6000905600 /* GroupMoveUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMoveUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		687703512BDEDDFB00905600 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		687703532BDEE29F00905600 /* PropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyView.swift; sourceTree = "<group>"; };
+		FDDACE6C2BE151BB00353308 /* AddMoveItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMoveItemView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +147,7 @@
 				687703222BDDCB5E00905600 /* MoveItemView.swift */,
 				687703512BDEDDFB00905600 /* HomeView.swift */,
 				687703532BDEE29F00905600 /* PropertyView.swift */,
+				FDDACE6C2BE151BB00353308 /* AddMoveItemView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -280,6 +283,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6877032A2BDDCB5F00905600 /* Persistence.swift in Sources */,
+				FDDACE6D2BE151BB00353308 /* AddMoveItemView.swift in Sources */,
 				687703232BDDCB5E00905600 /* MoveItemView.swift in Sources */,
 				6877032D2BDDCB5F00905600 /* GroupMove.xcdatamodeld in Sources */,
 				687703542BDEE29F00905600 /* PropertyView.swift in Sources */,

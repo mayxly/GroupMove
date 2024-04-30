@@ -2,10 +2,9 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22757" systemVersion="23B81" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="MoveItem" representedClassName="MoveItem" syncable="YES" codeGenerationType="class">
         <attribute name="dateCreated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="owner" optional="YES" attributeType="String"/>
-        <attribute name="price" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
+        <attribute name="price" optional="YES" attributeType="Integer 16" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="room" optional="YES" attributeType="String"/>
     </entity>
     <entity name="PropertyItem" representedClassName="PropertyItem" syncable="YES" codeGenerationType="class">
