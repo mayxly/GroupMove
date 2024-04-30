@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		68653E042BE158FD00B93222 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68653E032BE158FD00B93222 /* Color+Hex.swift */; };
 		687703212BDDCB5E00905600 /* GroupMoveApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703202BDDCB5E00905600 /* GroupMoveApp.swift */; };
 		687703232BDDCB5E00905600 /* MoveItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703222BDDCB5E00905600 /* MoveItemView.swift */; };
 		687703252BDDCB5F00905600 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 687703242BDDCB5F00905600 /* Assets.xcassets */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		68653E032BE158FD00B93222 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		6877031D2BDDCB5E00905600 /* GroupMove.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GroupMove.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		687703202BDDCB5E00905600 /* GroupMoveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMoveApp.swift; sourceTree = "<group>"; };
 		687703222BDDCB5E00905600 /* MoveItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveItemView.swift; sourceTree = "<group>"; };
@@ -84,6 +86,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		68653E022BE158C200B93222 /* UIExtension */ = {
+			isa = PBXGroup;
+			children = (
+				68653E032BE158FD00B93222 /* Color+Hex.swift */,
+			);
+			path = UIExtension;
+			sourceTree = "<group>";
+		};
 		687703142BDDCB5E00905600 = {
 			isa = PBXGroup;
 			children = (
@@ -107,6 +117,7 @@
 		6877031F2BDDCB5E00905600 /* GroupMove */ = {
 			isa = PBXGroup;
 			children = (
+				68653E022BE158C200B93222 /* UIExtension */,
 				687703502BDEDDCF00905600 /* Views */,
 				687703202BDDCB5E00905600 /* GroupMoveApp.swift */,
 				687703242BDDCB5F00905600 /* Assets.xcassets */,
@@ -293,6 +304,7 @@
 				687703542BDEE29F00905600 /* PropertyView.swift in Sources */,
 				687703522BDEDDFB00905600 /* HomeView.swift in Sources */,
 				687703212BDDCB5E00905600 /* GroupMoveApp.swift in Sources */,
+				68653E042BE158FD00B93222 /* Color+Hex.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
