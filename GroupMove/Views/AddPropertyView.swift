@@ -16,6 +16,7 @@ struct AddPropertyView: View {
     @State private var addBudget = false
     @State private var budgetAmount: Float?
     @State private var selectedColor = "00A5E3"
+    @State private var rooms = ["Kitchen", "Bedroom"]
     
     let colors = [
         "00A5E3",
@@ -46,18 +47,24 @@ struct AddPropertyView: View {
                             Circle()
                                 .frame(width: 100)
                                 .foregroundColor(Color(hex: selectedColor))
+                                .padding(.vertical, 10)
                             Spacer()
                         }
                         TextField("Property Name", text: $name).multilineTextAlignment(.center)
                     }
-                    Section {
+                    Section("Budget") {
                         Toggle("Add Budget", isOn: $addBudget)
                         if addBudget {
                             TextField("$0.00", value: $budgetAmount, format: .number)
                                 .keyboardType(.decimalPad)
                         }
                     }
-                    Section {
+                    Section("Rooms") {
+                        NavigationLink(destination: RoomPickerView()) {
+                            Text(rooms.joined(separator: ", "))
+                        }
+                    }
+                    Section("Color") {
                         LazyVGrid(columns: columns, spacing: 16) {
                             ForEach(colors, id: \.self) { color in
                                 Circle()

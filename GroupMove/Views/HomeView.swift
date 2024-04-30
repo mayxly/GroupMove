@@ -25,7 +25,13 @@ struct HomeView: View {
                         Section() {
                             ForEach(homes, id: \.self) { home in
                                 NavigationLink(destination: PropertyView(property: home)) {
+                                    Circle()
+                                        .frame(width: 32)
+                                        .padding(.vertical, 4)
+                                        .foregroundStyle(Color(hex: "00A5E3"))
                                     Text(home.name ?? "Property")
+                                        .bold()
+                                        .padding(.horizontal, 8)
                                 }
                             }
                         } header: {
@@ -40,7 +46,7 @@ struct HomeView: View {
                                     Image(systemName: "plus")
                                 }
                             }
-                            .listRowInsets(.init(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)))
+                            .listRowInsets(.init(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)))
                         }
                     }
                     .listStyle(.insetGrouped)

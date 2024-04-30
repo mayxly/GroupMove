@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		683EABC42BE19C1900520B15 /* RoomPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683EABC32BE19C1900520B15 /* RoomPickerView.swift */; };
 		68653E042BE158FD00B93222 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68653E032BE158FD00B93222 /* Color+Hex.swift */; };
 		687703212BDDCB5E00905600 /* GroupMoveApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703202BDDCB5E00905600 /* GroupMoveApp.swift */; };
 		687703252BDDCB5F00905600 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 687703242BDDCB5F00905600 /* Assets.xcassets */; };
@@ -41,6 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		683EABC32BE19C1900520B15 /* RoomPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomPickerView.swift; sourceTree = "<group>"; };
 		68653E032BE158FD00B93222 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		6877031D2BDDCB5E00905600 /* GroupMove.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GroupMove.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		687703202BDDCB5E00905600 /* GroupMoveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMoveApp.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 				687703532BDEE29F00905600 /* PropertyView.swift */,
 				687703552BDEF61300905600 /* AddPropertyView.swift */,
 				FDDACE6C2BE151BB00353308 /* AddMoveItemView.swift */,
+				683EABC32BE19C1900520B15 /* RoomPickerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6877032A2BDDCB5F00905600 /* Persistence.swift in Sources */,
+				683EABC42BE19C1900520B15 /* RoomPickerView.swift in Sources */,
 				FDDACE6D2BE151BB00353308 /* AddMoveItemView.swift in Sources */,
 				FD658C472BE1AEBE00B6DAA1 /* PreviewManager.swift in Sources */,
 				687703562BDEF61300905600 /* AddPropertyView.swift in Sources */,
