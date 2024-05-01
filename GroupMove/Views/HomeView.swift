@@ -28,7 +28,7 @@ struct HomeView: View {
                                     Circle()
                                         .frame(width: 32)
                                         .padding(.vertical, 4)
-                                        .foregroundStyle(Color(hex: "00A5E3"))
+                                        .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
                                     Text(home.name ?? "Property")
                                         .bold()
                                         .padding(.horizontal, 8)
