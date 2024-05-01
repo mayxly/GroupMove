@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		683EABC42BE19C1900520B15 /* RoomPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683EABC32BE19C1900520B15 /* RoomPickerView.swift */; };
 		68653E042BE158FD00B93222 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68653E032BE158FD00B93222 /* Color+Hex.swift */; };
 		687703212BDDCB5E00905600 /* GroupMoveApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687703202BDDCB5E00905600 /* GroupMoveApp.swift */; };
 		687703252BDDCB5F00905600 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 687703242BDDCB5F00905600 /* Assets.xcassets */; };
@@ -41,6 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		683EABC32BE19C1900520B15 /* RoomPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomPickerView.swift; sourceTree = "<group>"; };
 		68653E032BE158FD00B93222 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		6877031D2BDDCB5E00905600 /* GroupMove.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GroupMove.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		687703202BDDCB5E00905600 /* GroupMoveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMoveApp.swift; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 		687703512BDEDDFB00905600 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		687703532BDEE29F00905600 /* PropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyView.swift; sourceTree = "<group>"; };
 		687703552BDEF61300905600 /* AddPropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPropertyView.swift; sourceTree = "<group>"; };
+		68BF61AE2BE2A89600B11A6C /* GroupMove.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GroupMove.entitlements; sourceTree = "<group>"; };
 		FD658C462BE1AEBE00B6DAA1 /* PreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewManager.swift; sourceTree = "<group>"; };
 		FDDACE6C2BE151BB00353308 /* AddMoveItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMoveItemView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -117,6 +120,7 @@
 		6877031F2BDDCB5E00905600 /* GroupMove */ = {
 			isa = PBXGroup;
 			children = (
+				68BF61AE2BE2A89600B11A6C /* GroupMove.entitlements */,
 				FD658C452BE1AEA800B6DAA1 /* Shared */,
 				68653E022BE158C200B93222 /* UIExtension */,
 				687703502BDEDDCF00905600 /* Views */,
@@ -162,6 +166,7 @@
 				687703532BDEE29F00905600 /* PropertyView.swift */,
 				687703552BDEF61300905600 /* AddPropertyView.swift */,
 				FDDACE6C2BE151BB00353308 /* AddMoveItemView.swift */,
+				683EABC32BE19C1900520B15 /* RoomPickerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -238,7 +243,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1530;
 				TargetAttributes = {
 					6877031C2BDDCB5E00905600 = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -305,6 +310,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6877032A2BDDCB5F00905600 /* Persistence.swift in Sources */,
+				683EABC42BE19C1900520B15 /* RoomPickerView.swift in Sources */,
 				FDDACE6D2BE151BB00353308 /* AddMoveItemView.swift in Sources */,
 				FD658C472BE1AEBE00B6DAA1 /* PreviewManager.swift in Sources */,
 				687703562BDEF61300905600 /* AddPropertyView.swift in Sources */,
@@ -385,6 +391,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -445,6 +452,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -468,12 +476,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = GroupMove/GroupMove.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GroupMove/Preview Content\"";
 				DEVELOPMENT_TEAM = 9G69ARS5B2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GroupMove/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -486,6 +497,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = groupmove.GroupMove;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -497,12 +509,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = GroupMove/GroupMove.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GroupMove/Preview Content\"";
 				DEVELOPMENT_TEAM = 9G69ARS5B2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GroupMove/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -515,6 +530,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = groupmove.GroupMove;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

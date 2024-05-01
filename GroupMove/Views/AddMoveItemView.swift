@@ -68,7 +68,7 @@ struct AddMoveItemView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel", role: .cancel) {
                         done()
-                    }
+                    }.foregroundColor(.red)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
