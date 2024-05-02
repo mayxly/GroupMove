@@ -37,7 +37,6 @@ final class CoreDataStack: ObservableObject {
         let storesURL = privateStoreDescription.url?.deletingLastPathComponent()
         privateStoreDescription.url = storesURL?.appendingPathComponent("private.sqlite")
         
-        // TODO: 1
         let sharedStoreURL = storesURL?.appendingPathComponent("shared.sqlite")
         guard let sharedStoreDescription = privateStoreDescription
             .copy() as? NSPersistentStoreDescription else {
@@ -47,7 +46,6 @@ final class CoreDataStack: ObservableObject {
         }
         sharedStoreDescription.url = sharedStoreURL
         
-        // TODO: 2
         guard let containerIdentifier = privateStoreDescription
             .cloudKitContainerOptions?.containerIdentifier else {
             fatalError("Unable to get containerIdentifier")
@@ -58,10 +56,7 @@ final class CoreDataStack: ObservableObject {
         sharedStoreOptions.databaseScope = .shared
         sharedStoreDescription.cloudKitContainerOptions = sharedStoreOptions
         
-        // TODO: 3
         container.persistentStoreDescriptions.append(sharedStoreDescription)
-        
-        // TODO: 4
         
         container.loadPersistentStores { loadedStoreDescription, error in
             if let error = error as NSError? {
@@ -105,10 +100,24 @@ extension CoreDataStack {
         }
     }
     
-//    func delete(_ destination: Destination) {
-//        context.perform {
-//            self.context.delete(destination)
-//            self.save()
-//        }
-//    }
+    func deleteProperty(_ property: Property) {
+        context.perform {
+            self.context.delete(property)
+            self.save()
+        }
+    }
+    
+    func deleteMoveItem(_ moveItem: MoveItem) {
+        context.perform {
+            self.context.delete(moveItem)
+            self.save()
+        }
+    }
+    
+    func deleteRoom(_ room: Room) {
+        context.perform {
+            self.context.delete(room)
+            self.save()
+        }
+    }
 }
