@@ -66,7 +66,7 @@ struct PropertyView: View {
 
 
 struct PropertyView_Previews: PreviewProvider {
-    static var viewContext = PersistenceController.preview.container.viewContext
+    static var viewContext = CoreDataStack.shared.context
     
     static var previews: some View {
         let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: viewContext)
