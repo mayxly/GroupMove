@@ -15,7 +15,7 @@ struct HomeView: View {
         animation: .default)
     private var homes: FetchedResults<Property>
     
-    @State private var showingSheet = false
+    @State private var showAddPropertySheet = false
     
     var body: some View {
         VStack {
@@ -34,6 +34,7 @@ struct HomeView: View {
                                         .padding(.horizontal, 8)
                                 }
                             }
+                            .onDelete(perform: delete)
                         } header: {
                             HStack {
                                 Text("My Properties")
@@ -41,7 +42,7 @@ struct HomeView: View {
                                     .bold()
                                 Spacer()
                                 Button(action: {
-                                    showingSheet.toggle()
+                                    showAddPropertySheet.toggle()
                                 }) {
                                     Image(systemName: "plus")
                                 }
@@ -52,11 +53,18 @@ struct HomeView: View {
                     .listStyle(.insetGrouped)
                 }
                 .navigationTitle("Homes")
+                .toolbar {
+                    EditButton()
+                }
             }
-            .sheet(isPresented: $showingSheet) {
+            .sheet(isPresented: $showAddPropertySheet) {
                 AddPropertyView()
             }
         }
+    }
+    
+    private func delete(at offsets: IndexSet) {
+        print("Deleting")
     }
 }
 

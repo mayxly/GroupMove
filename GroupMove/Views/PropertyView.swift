@@ -16,7 +16,8 @@ struct PropertyView: View {
     
     @State private var roomItemMap = [String: [MoveItem]]()
     
-    @State private var showingSheet = false
+    @State private var showAddItemSheet = false
+    @State private var showEditPropertySheet = false
     
     // CloudKit Sharing
     @State private var share: CKShare?
@@ -39,7 +40,7 @@ struct PropertyView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    showingSheet.toggle()
+                    showAddItemSheet.toggle()
                 } label: {
                     Image(systemName: "plus")
                 }
@@ -56,8 +57,16 @@ struct PropertyView: View {
                 Image(systemName: "square.and.arrow.up")
               }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showEditPropertySheet.toggle()
+                } label: {
+                    Text("Edit")
+                        .foregroundStyle(.blue)
+                }
+            }
         }
-        .sheet(isPresented: $showingSheet, onDismiss: {
+        .sheet(isPresented: $showAddItemSheet, onDismiss: {
             generateRoomAndItemMapping()
         }){
             AddMoveItemView(passedMoveItem: nil, passedProperty: property)
@@ -70,6 +79,9 @@ struct PropertyView: View {
                 property: property
               )
             }
+        }
+        .sheet(isPresented: $showEditPropertySheet) {
+            AddPropertyView()
         }
         .onAppear {
             generateRoomAndItemMapping()
