@@ -28,6 +28,15 @@ final class CoreDataStack: ObservableObject {
         return sharedStore
     }
     
+    var ckContainer: CKContainer {
+      let storeDescription = persistentContainer.persistentStoreDescriptions.first
+      guard let identifier = storeDescription?
+        .cloudKitContainerOptions?.containerIdentifier else {
+        fatalError("Unable to get container identifier")
+      }
+      return CKContainer(identifier: identifier)
+    }
+    
     lazy var persistentContainer: NSPersistentCloudKitContainer = {
         let container = NSPersistentCloudKitContainer(name: "GroupMove")
         
@@ -90,6 +99,30 @@ final class CoreDataStack: ObservableObject {
 
 // MARK: Save or delete from Core Data
 extension CoreDataStack {
+    private func isShared(objectID: NSManagedObjectID) -> Bool {
+        var isShared = false
+        if let persistentStore = objectID.persistentStore {
+          if persistentStore == sharedPersistentStore {
+            isShared = true
+          } else {
+            let container = persistentContainer
+            do {
+              let shares = try container.fetchShares(matching: [objectID])
+              if shares.first != nil {
+                isShared = true
+              }
+            } catch {
+              print("Failed to fetch share for \(objectID): \(error)")
+            }
+          }
+        }
+        return isShared
+    }
+    
+    func isShared(object: NSManagedObject) -> Bool {
+      isShared(objectID: object.objectID)
+    }
+    
     func save() {
         if context.hasChanges {
             do {

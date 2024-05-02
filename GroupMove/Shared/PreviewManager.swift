@@ -20,6 +20,24 @@ class PreviewManager {
         return newProperty
     }
     
+    func getBasicPropertyWithRooms(context: NSManagedObjectContext) -> Property {
+        let newProperty = Property(context: context)
+        newProperty.name = "Blair House"
+        newProperty.color = "00A5E3"
+        newProperty.dateCreated = Date()
+        
+        let kitchen = Room(context: context)
+        kitchen.name = "Kitchen"
+        
+        let livingRoom = Room(context: context)
+        livingRoom.name = "Living Room"
+        
+        newProperty.addToRooms(kitchen)
+        newProperty.addToRooms(livingRoom)
+        
+        return newProperty
+    }
+    
     func getPropertyWithItemsAndRooms(context: NSManagedObjectContext) -> Property {
         let myProperty = getBasicProperty(context: context)
         
