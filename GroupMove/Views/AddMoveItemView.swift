@@ -17,6 +17,8 @@ struct AddMoveItemView: View {
     @State private var room: Room?
     @State private var owner: String
     
+    private var stack = CoreDataStack.shared
+    
     var property: Property
     var rooms: [Room]
     
@@ -93,12 +95,7 @@ struct AddMoveItemView: View {
             
             property.addToItems(selectedMoveItem!)
             
-            do {
-                try viewContext.save()
-            } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+            stack.save()
         }
         done()
     }
@@ -107,7 +104,7 @@ struct AddMoveItemView: View {
 
 
 #Preview {
-    var viewContext = PersistenceController.preview.container.viewContext
+    var viewContext = CoreDataStack.shared.context
     
     let property = PreviewManager.shared.getBasicProperty(context: viewContext)
     

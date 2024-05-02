@@ -9,12 +9,12 @@ import SwiftUI
 
 @main
 struct GroupMoveApp: App {
-    let persistenceController = PersistenceController.shared
+    let persistenceController = CoreDataStack.shared
 
     var body: some Scene {
         WindowGroup {
             HomeView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(\.managedObjectContext, persistenceController.context)
         }
     }
 }

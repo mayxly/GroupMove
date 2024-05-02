@@ -18,6 +18,8 @@ struct AddPropertyView: View {
     @State private var selectedColor = "00A5E3"
     @State private var selectedRooms: [String] = ["Kitchen", "Living Room"]
     
+    private var stack = CoreDataStack.shared
+    
     let colors = [
         "00A5E3",
         "8DD7BF",
@@ -128,12 +130,7 @@ struct AddPropertyView: View {
             selectedProperty.dateCreated = Date()
             selectedProperty.color = selectedColor
             
-            do {
-                try viewContext.save()
-            } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+            stack.save()
         }
         done()
     }
