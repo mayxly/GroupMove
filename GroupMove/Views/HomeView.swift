@@ -17,6 +17,8 @@ struct HomeView: View {
     
     @State private var showAddPropertySheet = false
     
+    private var stack = CoreDataStack.shared
+    
     var body: some View {
         VStack {
             NavigationView {
@@ -54,7 +56,9 @@ struct HomeView: View {
                 }
                 .navigationTitle("Homes")
                 .toolbar {
-                    EditButton()
+                    if homes.count > 0 {
+                        EditButton()
+                    }
                 }
             }
             .sheet(isPresented: $showAddPropertySheet) {
@@ -64,7 +68,21 @@ struct HomeView: View {
     }
     
     private func delete(at offsets: IndexSet) {
-        print("Deleting")
+        for index in offsets {
+            let property = homes[index]
+            
+            if let items = property.items?.allObjects as? [MoveItem] {
+                for item in items {
+                    stack.deleteMoveItem(item)
+                }
+            }
+            if let rooms = property.rooms?.allObjects as? [Room] {
+                for room in rooms {
+                    stack.deleteRoom(room)
+                }
+            }
+            stack.deleteProperty(property)
+        }
     }
 }
 

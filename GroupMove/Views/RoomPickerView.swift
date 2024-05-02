@@ -69,7 +69,7 @@ struct RoomPickerView: View {
                         }
                         
                     }
-                    .alert("Error", isPresented: $showingRoomError) {
+                    .alert("Save Error", isPresented: $showingRoomError) {
                     } message: {
                         Text("The room you are trying to add already exists.")
                     }
