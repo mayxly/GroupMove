@@ -16,7 +16,7 @@ struct AddPropertyView: View {
     @State private var addBudget = false
     @State private var budgetAmount: Float?
     @State private var selectedColor = "00A5E3"
-    @State private var rooms = ["Kitchen", "Bedroom"]
+    @State private var selectedRooms: [String] = ["Kitchen", "Living Room"]
     
     let colors = [
         "00A5E3",
@@ -60,8 +60,12 @@ struct AddPropertyView: View {
                         }
                     }
                     Section("Rooms") {
-                        NavigationLink(destination: RoomPickerView()) {
-                            Text(rooms.joined(separator: ", "))
+                        NavigationLink(destination: RoomPickerView(selectedRooms: $selectedRooms)) {
+                            if selectedRooms.isEmpty {
+                                Text("Choose rooms...")
+                            } else {
+                                Text(selectedRooms.joined(separator: ", "))
+                            }
                         }
                     }
                     Section("Color") {
@@ -109,11 +113,20 @@ struct AddPropertyView: View {
                 selectedProperty = Property(context: viewContext)
             }
             
-            selectedProperty?.name = name
-            selectedProperty?.budget = budgetAmount ?? 0
-//            selectedProperty?.rooms = "kitchen;bedroom;livingroom" // TODO: add rooms
-            selectedProperty?.dateCreated = Date()
-            selectedProperty?.color = selectedColor
+            guard let selectedProperty else { return }
+            
+            selectedProperty.name = name
+            selectedProperty.budget = budgetAmount ?? 0
+            
+            // Create Rooms
+            for roomName in selectedRooms {
+                let newRoom = Room(context: viewContext)
+                newRoom.name = roomName
+                selectedProperty.addToRooms(newRoom)
+            }
+            
+            selectedProperty.dateCreated = Date()
+            selectedProperty.color = selectedColor
             
             do {
                 try viewContext.save()
