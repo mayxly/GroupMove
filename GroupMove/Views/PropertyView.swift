@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreData
+import CloudKit
 
 struct PropertyView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -16,6 +17,11 @@ struct PropertyView: View {
     @State private var roomItemMap = [String: [MoveItem]]()
     
     @State private var showingSheet = false
+    
+    // CloudKit Sharing
+    @State private var share: CKShare?
+    @State private var showShareSheet = false
+    private let stack = CoreDataStack.shared
     
     var body: some View {
         VStack {
@@ -38,18 +44,39 @@ struct PropertyView: View {
                     Image(systemName: "plus")
                 }
             }
+            ToolbarItem(placement: .navigationBarTrailing) {
+              Button {
+                  if !stack.isShared(object: property) {
+                    Task {
+                      await createShare(property)
+                    }
+                  }
+                  showShareSheet = true
+              } label: {
+                Image(systemName: "square.and.arrow.up")
+              }
+            }
         }
         .sheet(isPresented: $showingSheet, onDismiss: {
-            generateMapping()
+            generateRoomAndItemMapping()
         }){
             AddMoveItemView(passedMoveItem: nil, passedProperty: property)
         }
+        .sheet(isPresented: $showShareSheet) {
+            if let share = share {
+              CloudSharingView(
+                share: share,
+                container: stack.ckContainer,
+                property: property
+              )
+            }
+        }
         .onAppear {
-            generateMapping()
+            generateRoomAndItemMapping()
         }
     }
     
-    func generateMapping() {
+    private func generateRoomAndItemMapping() {
         roomItemMap = [:]
         if let items = property.items?.allObjects as? [MoveItem] {
             for item in items {
@@ -62,6 +89,17 @@ struct PropertyView: View {
             }
         }
     }
+    
+    private func createShare(_ property: Property) async {
+      do {
+        let (_, share, _) =
+        try await stack.persistentContainer.share([property], to: nil)
+        share[CKShare.SystemFieldKey.title] = property.name
+        self.share = share
+      } catch {
+        print("Failed to create share")
+      }
+    }
 }
 
 
@@ -71,6 +109,6 @@ struct PropertyView_Previews: PreviewProvider {
     static var previews: some View {
         let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: viewContext)
         
-        return PropertyView(property: property).environment(\.managedObjectContext, viewContext)
+        return PropertyView(property: property)
     }
 }

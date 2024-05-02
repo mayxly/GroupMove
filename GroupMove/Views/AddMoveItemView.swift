@@ -14,7 +14,7 @@ struct AddMoveItemView: View {
     @State private var selectedMoveItem: MoveItem?
     @State private var name: String
     @State private var price: Float?
-    @State private var room: Room?
+    @State private var room: Room
     @State private var owner: String
     
     private var stack = CoreDataStack.shared
@@ -38,7 +38,7 @@ struct AddMoveItemView: View {
             _owner = State(initialValue: moveItem.owner ?? "")
         } else {
             _name = State(initialValue: "")
-            _room = State(initialValue: nil)
+            _room = State(initialValue: rooms[0])
             _owner = State(initialValue: "")
             _price = State(initialValue: Float(0))
         }
@@ -106,7 +106,7 @@ struct AddMoveItemView: View {
 #Preview {
     var viewContext = CoreDataStack.shared.context
     
-    let property = PreviewManager.shared.getBasicProperty(context: viewContext)
+    let property = PreviewManager.shared.getBasicPropertyWithRooms(context: viewContext)
     
     return AddMoveItemView(passedMoveItem: nil, passedProperty: property)
 }
