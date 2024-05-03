@@ -12,11 +12,11 @@ struct AddPropertyView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @State private var selectedProperty: Property?
-    @State private var name = ""
+    @State private var name: String
     @State private var addBudget = false
     @State private var budgetAmount: Float?
-    @State private var selectedColor = "00A5E3"
-    @State private var selectedRooms: [String] = ["Kitchen", "Living Room"]
+    @State private var selectedColor: String
+    @State private var selectedRooms: [String]
     
     @State private var showingNameError = false
     
@@ -40,6 +40,27 @@ struct AddPropertyView: View {
     let columns = [
         GridItem(.adaptive(minimum: 40))
     ]
+    
+    init(passedProperty: Property?) {
+        if let property = passedProperty {
+            _selectedProperty = State(initialValue: property)
+            _name = State(initialValue: property.name ?? "")
+            _budgetAmount = State(initialValue: Float(property.budget))
+            _selectedColor = State(initialValue: property.color!)
+            _selectedRooms = State(initialValue: [])
+//            if let allRooms = passedProperty?.rooms?.allObjects as? [Room] {
+//                for room in allRooms {
+//                    selectedRooms.append(room.name ?? "Undefined")
+//                }
+//            }
+        } else {
+            _name = State(initialValue: "")
+            _budgetAmount = State(initialValue: nil)
+            _selectedColor = State(initialValue: "00A5E3")
+//            _selectedRooms = State(initialValue: ["Kitchen", "Living Room"])
+        }
+        _selectedRooms = State(initialValue: ["Kitchen", "Living Room"])
+    }
     
     var body: some View {
         NavigationView {
@@ -162,6 +183,6 @@ struct AddPropertyView: View {
 
 struct AddPropertyView_Previews: PreviewProvider {
     static var previews: some View {
-        AddPropertyView()
+        AddPropertyView(passedProperty: nil)
     }
 }

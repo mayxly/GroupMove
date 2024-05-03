@@ -85,7 +85,7 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showAddPropertySheet) {
-                AddPropertyView()
+                AddPropertyView(passedProperty: nil)
             }
         }
     }
