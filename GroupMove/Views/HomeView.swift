@@ -23,36 +23,59 @@ struct HomeView: View {
         VStack {
             NavigationView {
                 VStack {
-                    List {
-                        Section() {
-                            ForEach(homes, id: \.self) { home in
-                                NavigationLink(destination: PropertyView(property: home)) {
-                                    Circle()
-                                        .frame(width: 32)
-                                        .padding(.vertical, 4)
-                                        .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
-                                    Text(home.name ?? "Property")
-                                        .bold()
-                                        .padding(.horizontal, 8)
+                    ZStack {
+                        List {
+                            Section() {
+                                ForEach(homes, id: \.self) { home in
+                                    NavigationLink(destination: PropertyView(property: home)) {
+                                        Circle()
+                                            .frame(width: 32)
+                                            .padding(.vertical, 4)
+                                            .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
+                                        Text(home.name ?? "Property")
+                                            .bold()
+                                            .padding(.horizontal, 8)
+                                    }
                                 }
+                                .onDelete(perform: delete)
+                            } header: {
+                                HStack {
+                                    Text("My Properties")
+                                        .font(.system(size: 16))
+                                        .bold()
+                                    Spacer()
+                                    Button(action: {
+                                        showAddPropertySheet.toggle()
+                                    }) {
+                                        Image(systemName: "plus")
+                                    }
+                                }
+                                .listRowInsets(.init(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)))
                             }
-                            .onDelete(perform: delete)
-                        } header: {
-                            HStack {
-                                Text("My Properties")
-                                    .font(.system(size: 16))
-                                    .bold()
+                        }
+                        if homes.count < 1 {
+                            VStack {
                                 Spacer()
+                                Text("You don't have any properties yet!")
+                                    .foregroundStyle(.black.opacity(0.6))
+                                    .padding(.vertical, 10)
+                                    .multilineTextAlignment(.center)
                                 Button(action: {
                                     showAddPropertySheet.toggle()
                                 }) {
-                                    Image(systemName: "plus")
+                                    Text("Add Property")
                                 }
+                                .padding(.horizontal, 30)
+                                .padding(.vertical, 15)
+                                .foregroundColor(.white)
+                                .background(.blue)
+                                .cornerRadius(30)
+                                .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
+                                Spacer()
+                                Spacer()
                             }
-                            .listRowInsets(.init(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)))
                         }
                     }
-                    .listStyle(.insetGrouped)
                 }
                 .navigationTitle("Homes")
                 .toolbar {
