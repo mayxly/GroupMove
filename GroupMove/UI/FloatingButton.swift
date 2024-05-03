@@ -29,5 +29,5 @@ struct FloatingButton<Destination: View>: View {
 }
 
 #Preview {
-    FloatingButton(destination: AddPropertyView(), text: "Add Property")
+    FloatingButton(destination: AddPropertyView(passedProperty: nil), text: "Add Property")
 }
