@@ -55,9 +55,8 @@ struct AddPropertyView: View {
                             Spacer()
                         }
                         ZStack {
-                            RoundedRectangle(cornerRadius: 10) // Container view with rounded corners
+                            RoundedRectangle(cornerRadius: 10)
                                 .foregroundColor(.black.opacity(0.05))
-                                .cornerRadius(4)
                                 .frame(height: 40)
                             TextField("Property Name", text: $name)
                                 .multilineTextAlignment(.center)
