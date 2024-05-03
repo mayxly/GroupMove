@@ -31,7 +31,9 @@ struct PropertyView: View {
                     ForEach(roomItemMap.sorted(by: { $0.key < $1.key }), id: \.key) { roomName, items in
                         Section(roomName) {
                             ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
-                                Text(item.name ?? "Untitled")
+                                NavigationLink(destination: ItemInfoView()) {
+                                    Text(item.name ?? "Untitled")
+                                }
                             }
                         }
                     }
@@ -163,7 +165,7 @@ struct PropertyView_Previews: PreviewProvider {
     static var viewContext = CoreDataStack.shared.context
     
     static var previews: some View {
-        let property = PreviewManager.shared.getBasicPropertyWithRooms(context: viewContext)
+        let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: viewContext)
         
         return PropertyView(property: property)
     }
