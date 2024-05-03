@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct GroupMoveApp: App {
     let persistenceController = CoreDataStack.shared
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     var body: some Scene {
         WindowGroup {
