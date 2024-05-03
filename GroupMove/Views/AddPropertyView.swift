@@ -18,6 +18,8 @@ struct AddPropertyView: View {
     @State private var selectedColor = "00A5E3"
     @State private var selectedRooms: [String] = ["Kitchen", "Living Room"]
     
+    @State private var showingNameError = false
+    
     private var stack = CoreDataStack.shared
     
     let colors = [
@@ -49,12 +51,23 @@ struct AddPropertyView: View {
                             Circle()
                                 .frame(width: 100)
                                 .foregroundColor(Color(hex: selectedColor))
-                                .padding(.vertical, 10)
+                                .padding(.top, 10)
                             Spacer()
                         }
-                        TextField("Property Name", text: $name).multilineTextAlignment(.center)
-                    }
-                    Section("Budget") {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10)
+                                .foregroundColor(.black.opacity(0.05))
+                                .frame(height: 40)
+                            TextField("Property Name", text: $name)
+                                .multilineTextAlignment(.center)
+                                .alert("Save Error", isPresented: $showingNameError) {
+                                } message: {
+                                    Text("Please enter a property name.")
+                                }
+                        }
+                    }.listRowSeparator(.hidden)
+                    Section(header: Text("Budget"),
+                            footer: Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")) {
                         Toggle("Add Budget", isOn: $addBudget)
                         if addBudget {
                             TextField("$0.00", value: $budgetAmount, format: .number)
@@ -64,7 +77,7 @@ struct AddPropertyView: View {
                     Section("Rooms") {
                         NavigationLink(destination: RoomPickerView(selectedRooms: $selectedRooms)) {
                             if selectedRooms.isEmpty {
-                                Text("Choose rooms...")
+                                Text("Add rooms...")
                             } else {
                                 Text(selectedRooms.joined(separator: ", "))
                             }
@@ -102,14 +115,18 @@ struct AddPropertyView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
-                        saveProperty()
+                        if !isValidPropertyName(for: name) {
+                            showingNameError.toggle()
+                        } else {
+                            saveProperty()
+                        }
                     }
                 }
             }
         }
     }
     
-    func saveProperty() {
+    private func saveProperty() {
         withAnimation {
             if selectedProperty == nil {
                 selectedProperty = Property(context: viewContext)
@@ -133,6 +150,13 @@ struct AddPropertyView: View {
             stack.save()
         }
         done()
+    }
+    
+    private func isValidPropertyName(for name: String) -> Bool {
+        if name == "" {
+            return false
+        }
+        return true
     }
 }
 

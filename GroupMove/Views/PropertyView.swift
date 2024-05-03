@@ -16,7 +16,8 @@ struct PropertyView: View {
     
     @State private var roomItemMap = [String: [MoveItem]]()
     
-    @State private var showingSheet = false
+    @State private var showAddItemSheet = false
+    @State private var showEditPropertySheet = false
     
     // CloudKit Sharing
     @State private var share: CKShare?
@@ -25,12 +26,36 @@ struct PropertyView: View {
     
     var body: some View {
         VStack {
-            List {
-                ForEach(roomItemMap.sorted(by: { $0.key < $1.key }), id: \.key) { roomName, items in
-                    Section(roomName) {
-                        ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
-                            Text(item.name ?? "Untitled")
+            ZStack {
+                List {
+                    ForEach(roomItemMap.sorted(by: { $0.key < $1.key }), id: \.key) { roomName, items in
+                        Section(roomName) {
+                            ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
+                                Text(item.name ?? "Untitled")
+                            }
                         }
+                    }
+                }
+                if roomItemMap.count < 1 {
+                    VStack {
+                        Spacer()
+                        Text("You don't have any items\nin your property yet!")
+                            .foregroundStyle(.black.opacity(0.6))
+                            .padding(.vertical, 10)
+                            .multilineTextAlignment(.center)
+                        Button(action: {
+                            showAddItemSheet.toggle()
+                        }) {
+                            Text("Add Item")
+                        }
+                        .padding(.horizontal, 30)
+                        .padding(.vertical, 15)
+                        .foregroundColor(.white)
+                        .background(.blue)
+                        .cornerRadius(30)
+                        .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
+                        Spacer()
+                        Spacer()
                     }
                 }
             }
@@ -39,7 +64,7 @@ struct PropertyView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    showingSheet.toggle()
+                    showAddItemSheet.toggle()
                 } label: {
                     Image(systemName: "plus")
                 }
@@ -56,8 +81,16 @@ struct PropertyView: View {
                 Image(systemName: "square.and.arrow.up")
               }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showEditPropertySheet.toggle()
+                } label: {
+                    Text("Edit")
+                        .foregroundStyle(.blue)
+                }
+            }
         }
-        .sheet(isPresented: $showingSheet, onDismiss: {
+        .sheet(isPresented: $showAddItemSheet, onDismiss: {
             generateRoomAndItemMapping()
         }){
             AddMoveItemView(passedMoveItem: nil, passedProperty: property)
@@ -70,6 +103,9 @@ struct PropertyView: View {
                 property: property
               )
             }
+        }
+        .sheet(isPresented: $showEditPropertySheet) {
+            AddPropertyView()
         }
         .onAppear {
             generateRoomAndItemMapping()
@@ -107,7 +143,7 @@ struct PropertyView_Previews: PreviewProvider {
     static var viewContext = CoreDataStack.shared.context
     
     static var previews: some View {
-        let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: viewContext)
+        let property = PreviewManager.shared.getBasicPropertyWithRooms(context: viewContext)
         
         return PropertyView(property: property)
     }
