@@ -68,5 +68,18 @@ class PreviewManager {
         return myProperty
     }
     
+    func getMoveItem(context: NSManagedObjectContext) -> MoveItem {
+        let bedroom = Room(context: context)
+        bedroom.name = "Bedroom"
+        
+        let lamp = MoveItem(context: context)
+        lamp.name = "Lamp"
+        lamp.owner = "May Ly"
+        lamp.price = 0
+        lamp.dateCreated = Date()
+        lamp.room = bedroom
+        return lamp
+    }
+    
     private init() {}
 }

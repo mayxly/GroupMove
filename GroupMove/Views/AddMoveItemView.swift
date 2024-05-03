@@ -52,6 +52,7 @@ struct AddMoveItemView: View {
                 }
                 Section("Price") {
                     TextField("Price", value: $price, format: .number)
+                        .keyboardType(.decimalPad)
                 }
                 Section("Room") {
                     Picker("Room", selection: $room) {
