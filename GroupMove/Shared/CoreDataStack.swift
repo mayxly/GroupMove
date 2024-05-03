@@ -123,6 +123,17 @@ extension CoreDataStack {
       isShared(objectID: object.objectID)
     }
     
+    func getShare(_ property: Property) -> CKShare? {
+      guard isShared(object: property) else { return nil }
+      guard let shareDictionary = try? persistentContainer.fetchShares(matching: [property.objectID]),
+        let share = shareDictionary[property.objectID] else {
+        print("Unable to get CKShare")
+        return nil
+      }
+      share[CKShare.SystemFieldKey.title] = property.name
+      return share
+    }
+    
     func save() {
         if context.hasChanges {
             do {
