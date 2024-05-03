@@ -24,7 +24,7 @@ struct ItemInfoView: View {
                 }
             }
             ZStack(alignment: .top) {
-                Color.white
+                Color(UIColor.systemBackground)
                     .cornerRadius(30)
                     .frame(height: 100)
                     .offset(y: -30)
