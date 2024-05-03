@@ -51,17 +51,24 @@ struct AddPropertyView: View {
                             Circle()
                                 .frame(width: 100)
                                 .foregroundColor(Color(hex: selectedColor))
-                                .padding(.vertical, 10)
+                                .padding(.top, 10)
                             Spacer()
                         }
-                        TextField("Property Name", text: $name)
-                            .multilineTextAlignment(.center)
-                            .alert("Save Error", isPresented: $showingNameError) {
-                            } message: {
-                                Text("Please enter a property name.")
-                            }
-                    }
-                    Section("Budget") {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10) // Container view with rounded corners
+                                .foregroundColor(.black.opacity(0.05))
+                                .cornerRadius(4)
+                                .frame(height: 40)
+                            TextField("Property Name", text: $name)
+                                .multilineTextAlignment(.center)
+                                .alert("Save Error", isPresented: $showingNameError) {
+                                } message: {
+                                    Text("Please enter a property name.")
+                                }
+                        }
+                    }.listRowSeparator(.hidden)
+                    Section(header: Text("Budget"),
+                            footer: Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")) {
                         Toggle("Add Budget", isOn: $addBudget)
                         if addBudget {
                             TextField("$0.00", value: $budgetAmount, format: .number)
