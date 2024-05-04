@@ -21,6 +21,7 @@ struct AddMoveItemView: View {
     
     var property: Property
     var rooms: [Room]
+    var hasBudget: Bool
     
     init(passedMoveItem: MoveItem?, passedProperty: Property) {
         property = passedProperty
@@ -29,6 +30,7 @@ struct AddMoveItemView: View {
         } else {
             rooms = []
         }
+        hasBudget = property.hasBudget
         
         if let moveItem = passedMoveItem {
             _selectedMoveItem = State(initialValue: moveItem)
@@ -38,9 +40,9 @@ struct AddMoveItemView: View {
             _owner = State(initialValue: moveItem.owner ?? "")
         } else {
             _name = State(initialValue: "")
+            _price = State(initialValue: Float(0))
             _room = State(initialValue: rooms[0])
             _owner = State(initialValue: "")
-            _price = State(initialValue: Float(0))
         }
     }
     
@@ -50,8 +52,10 @@ struct AddMoveItemView: View {
                 Section {
                     TextField("Item Name", text: $name)
                 }
-                Section("Price") {
-                    TextField("Price", value: $price, format: .number)
+                if hasBudget {
+                    Section("Price") {
+                        TextField("Price", value: $price, format: .number)
+                    }
                 }
                 Section("Room") {
                     Picker("Room", selection: $room) {
