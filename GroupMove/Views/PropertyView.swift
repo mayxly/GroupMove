@@ -38,20 +38,22 @@ struct PropertyView: View {
                         }
                     }
                     if roomItemMap.count > 0 {
-                        Section("Participants") {
-                            if let share = share {
-                                ForEach(share.participants, id: \.self) { participant in
-                                    VStack(alignment: .leading) {
-                                        Text(participant.userIdentity.nameComponents?.formatted(.name(style: .long)) ?? "")
-                                            .font(.headline)
-                                        Text("Acceptance Status: \(string(for: participant.acceptanceStatus))")
-                                            .font(.subheadline)
-                                        Text("Role: \(string(for: participant.role))")
-                                            .font(.subheadline)
-                                        Text("Permissions: \(string(for: participant.permission))")
-                                            .font(.subheadline)
+                        if let share = share {
+                            if share.participants.count > 1 {
+                                Section("Participants") {
+                                    ForEach(share.participants, id: \.self) { participant in
+                                        VStack(alignment: .leading) {
+                                            Text(participant.userIdentity.nameComponents?.formatted(.name(style: .long)) ?? "")
+                                                .font(.headline)
+                                            Text("Acceptance Status: \(string(for: participant.acceptanceStatus))")
+                                                .font(.subheadline)
+                                            Text("Role: \(string(for: participant.role))")
+                                                .font(.subheadline)
+                                            Text("Permissions: \(string(for: participant.permission))")
+                                                .font(.subheadline)
+                                        }
+                                        .padding(.bottom, 8)
                                     }
-                                    .padding(.bottom, 8)
                                 }
                             }
                         }
