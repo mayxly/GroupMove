@@ -31,7 +31,7 @@ struct PropertyView: View {
                     ForEach(roomItemMap.sorted(by: { $0.key < $1.key }), id: \.key) { roomName, items in
                         Section(roomName) {
                             ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
-                                NavigationLink(destination: ItemInfoView()) {
+                                NavigationLink(destination: ItemInfoView(item: item)) {
                                     Text(item.name ?? "Untitled")
                                 }
                             }

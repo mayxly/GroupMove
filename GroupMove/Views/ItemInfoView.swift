@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ItemInfoView: View {
     
-    var item: MoveItem = MoveItem()
+    var item: MoveItem
     
     var body: some View {
         ScrollView {
@@ -31,15 +31,19 @@ struct ItemInfoView: View {
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading) {
                         HStack {
-                            Text("Lamp")
+                            Text(item.name ?? "Name")
                                 .font(.title)
                                 .bold()
                             Spacer()
-                            Text("$14.99")
+                            if item.price == 0 {
+                                Text("Free")
+                            } else {
+                                Text("$"+String(format: "%.2f", item.price))
+                            }
                         }
-                        Text("Added by May Ly")
+                        Text("Added by \(item.owner ?? "Owner")")
                             .foregroundColor(.gray)
-                        Text("Bedroom")
+                        Text(item.room?.name ?? "Room")
                             .padding(.horizontal, 20)
                             .padding(.vertical, 4)
                             .foregroundColor(.white)
@@ -64,5 +68,7 @@ struct ItemInfoView: View {
 }
 
 #Preview {
-    ItemInfoView()
+    var viewContext = CoreDataStack.shared.context
+    let item = PreviewManager.shared.getMoveItem(context: viewContext)
+    return ItemInfoView(item: item)
 }

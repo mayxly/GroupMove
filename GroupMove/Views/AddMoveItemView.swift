@@ -55,6 +55,7 @@ struct AddMoveItemView: View {
                 if hasBudget {
                     Section("Price") {
                         TextField("Price", value: $price, format: .number)
+                         .keyboardType(.decimalPad)
                     }
                 }
                 Section("Room") {
