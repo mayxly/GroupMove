@@ -13,7 +13,7 @@ struct AddPropertyView: View {
     
     @State private var selectedProperty: Property?
     @State private var name: String
-    @State private var addBudget = false
+    @State private var hasBudget: Bool
     @State private var budgetAmount: Float?
     @State private var selectedColor: String
     @State private var selectedRooms: [String]
@@ -45,6 +45,7 @@ struct AddPropertyView: View {
         if let property = passedProperty {
             _selectedProperty = State(initialValue: property)
             _name = State(initialValue: property.name ?? "")
+            _hasBudget = State(initialValue: property.hasBudget)
             _budgetAmount = State(initialValue: Float(property.budget))
             _selectedColor = State(initialValue: property.color!)
             _selectedRooms = State(initialValue: [])
@@ -55,6 +56,7 @@ struct AddPropertyView: View {
 //            }
         } else {
             _name = State(initialValue: "")
+            _hasBudget = State(initialValue: false)
             _budgetAmount = State(initialValue: nil)
             _selectedColor = State(initialValue: "00A5E3")
 //            _selectedRooms = State(initialValue: ["Kitchen", "Living Room"])
@@ -89,8 +91,8 @@ struct AddPropertyView: View {
                     }.listRowSeparator(.hidden)
                     Section(header: Text("Budget"),
                             footer: Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")) {
-                        Toggle("Add Budget", isOn: $addBudget)
-                        if addBudget {
+                        Toggle("Add Budget", isOn: $hasBudget)
+                        if hasBudget {
                             TextField("$0.00", value: $budgetAmount, format: .number)
                                 .keyboardType(.decimalPad)
                         }
@@ -156,7 +158,9 @@ struct AddPropertyView: View {
             guard let selectedProperty else { return }
             
             selectedProperty.name = name
+            
             selectedProperty.budget = budgetAmount ?? 0
+            selectedProperty.hasBudget = hasBudget
             
             // Create Rooms
             for roomName in selectedRooms {
