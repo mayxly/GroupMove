@@ -23,11 +23,25 @@ struct RoomPickerView: View {
 
     @State private var isEditingList = false
     @Binding var selectedRooms: [Room]
-
-    @State private var showingRoomError = false
+    @State private var showingCustomRoomError = false
+    @State private var showingNoRoomError = false
     
     private let stack = CoreDataStack.shared
-    
+
+    // Custom back button
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    var backButton : some View { Button(action: {
+        if selectedRooms.count < 1 {
+            showingNoRoomError = true
+            return
+        }
+        self.presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "chevron.left")
+            Text("New Property")
+        }
+    }
+
     var body: some View {
         List() {
             Section("Your Rooms") {
@@ -52,14 +66,14 @@ struct RoomPickerView: View {
                     .onSubmit {
                         if !isValidRoom(for: customRoom) {
                             customRoom = ""
-                            showingRoomError.toggle()
+                            showingCustomRoomError.toggle()
                         } else {
                             selectedRooms.append(CreateRoom(customRoom))
                             customRoom = ""
                         }
                         
                     }
-                    .alert("Save Error", isPresented: $showingRoomError) {
+                    .alert("Custom Room Error", isPresented: $showingCustomRoomError) {
                     } message: {
                         Text("The room you are trying to add already exists.")
                     }
@@ -77,6 +91,12 @@ struct RoomPickerView: View {
                     }
                 }
             }
+        }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarItems(leading: backButton)
+        .alert("Save Error", isPresented: $showingNoRoomError) {
+        } message: {
+            Text("There must be at least 1 room in the property.")
         }
     }
     
