@@ -16,7 +16,9 @@ struct AddPropertyView: View {
     @State private var hasBudget: Bool
     @State private var budgetAmount: Float?
     @State private var selectedColor: String
-    @State private var selectedRooms: [String]
+    @State private var selectedRooms: [Room]
+    
+    @State private var shouldAddDefaultRooms: Bool
     
     @State private var showingNameError = false
     
@@ -48,20 +50,18 @@ struct AddPropertyView: View {
             _hasBudget = State(initialValue: property.hasBudget)
             _budgetAmount = State(initialValue: Float(property.budget))
             _selectedColor = State(initialValue: property.color!)
-            _selectedRooms = State(initialValue: [])
-//            if let allRooms = passedProperty?.rooms?.allObjects as? [Room] {
-//                for room in allRooms {
-//                    selectedRooms.append(room.name ?? "Undefined")
-//                }
-//            }
+            
+            // Init rooms and store existing rooms
+            _selectedRooms = State(initialValue: (passedProperty?.rooms?.allObjects as? [Room] ?? []).sorted(by: { $0.orderIndex < $1.orderIndex }))
+            _shouldAddDefaultRooms = State(initialValue: false)
         } else {
             _name = State(initialValue: "")
             _hasBudget = State(initialValue: false)
             _budgetAmount = State(initialValue: nil)
             _selectedColor = State(initialValue: "00A5E3")
-//            _selectedRooms = State(initialValue: ["Kitchen", "Living Room"])
+            _selectedRooms = State(initialValue: [])
+            _shouldAddDefaultRooms = State(initialValue: true)
         }
-        _selectedRooms = State(initialValue: ["Kitchen", "Living Room"])
     }
     
     var body: some View {
@@ -69,13 +69,21 @@ struct AddPropertyView: View {
             VStack() {
                 Form {
                     Section() {
-                        HStack {
-                            Spacer()
-                            Circle()
-                                .frame(width: 100)
-                                .foregroundColor(Color(hex: selectedColor))
+                        ZStack {
+                            HStack {
+                                Spacer()
+                                Circle()
+                                    .frame(width: 100)
+                                    .foregroundColor(Color(hex: selectedColor))
+                                    .padding(.top, 10)
+                                Spacer()
+                            }
+                            Image(systemName: "house.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(.white)
                                 .padding(.top, 10)
-                            Spacer()
+                            
                         }
                         ZStack {
                             RoundedRectangle(cornerRadius: 10)
@@ -146,6 +154,12 @@ struct AddPropertyView: View {
                     }
                 }
             }
+            .onAppear {
+                if shouldAddDefaultRooms {
+                    addDefaultRooms()
+                    shouldAddDefaultRooms = false
+                }
+            }
         }
     }
     
@@ -162,11 +176,13 @@ struct AddPropertyView: View {
             selectedProperty.budget = budgetAmount ?? 0
             selectedProperty.hasBudget = hasBudget
             
-            // Create Rooms
-            for roomName in selectedRooms {
-                let newRoom = Room(context: viewContext)
-                newRoom.name = roomName
-                selectedProperty.addToRooms(newRoom)
+            selectedProperty.rooms = []
+            
+            var index = 0
+            for room in selectedRooms {
+                room.orderIndex = Int16(index)
+                selectedProperty.addToRooms(room)
+                index += 1
             }
             
             selectedProperty.dateCreated = Date()
@@ -177,11 +193,27 @@ struct AddPropertyView: View {
         done()
     }
     
+    private func addDefaultRooms() {
+        let kitchen = Room(context: stack.context)
+        kitchen.name = "Kitchen"
+        let livingRoom = Room(context: stack.context)
+        livingRoom.name = "Living Room"
+        
+        selectedRooms.append(kitchen)
+        selectedRooms.append(livingRoom)
+    }
+    
     private func isValidPropertyName(for name: String) -> Bool {
         if name == "" {
             return false
         }
         return true
+    }
+}
+
+extension Array where Element == Room {
+    func joined(separator: String) -> String {
+        return self.map { $0.name! }.joined(separator: separator)
     }
 }
 

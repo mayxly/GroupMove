@@ -28,9 +28,11 @@ class PreviewManager {
         
         let kitchen = Room(context: context)
         kitchen.name = "Kitchen"
+        kitchen.orderIndex = 0
         
         let livingRoom = Room(context: context)
         livingRoom.name = "Living Room"
+        livingRoom.orderIndex = 1
         
         newProperty.addToRooms(kitchen)
         newProperty.addToRooms(livingRoom)
@@ -43,9 +45,11 @@ class PreviewManager {
         
         let kitchen = Room(context: context)
         kitchen.name = "Kitchen"
+        kitchen.orderIndex = 0
         
         let bedroom = Room(context: context)
         bedroom.name = "Bedroom"
+        bedroom.orderIndex = 1
         
         let microwave = MoveItem(context: context)
         microwave.name = "Microwave"
@@ -71,6 +75,7 @@ class PreviewManager {
     func getMoveItem(context: NSManagedObjectContext) -> MoveItem {
         let bedroom = Room(context: context)
         bedroom.name = "Bedroom"
+        bedroom.orderIndex = 1
         
         let lamp = MoveItem(context: context)
         lamp.name = "Lamp"

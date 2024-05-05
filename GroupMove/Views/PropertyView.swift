@@ -14,7 +14,7 @@ struct PropertyView: View {
     
     @ObservedObject var property: Property
     
-    @State private var roomItemMap = [String: [MoveItem]]()
+    @State private var roomItemMap = [Room: [MoveItem]]()
     
     @State private var showAddItemSheet = false
     @State private var showEditPropertySheet = false
@@ -28,8 +28,8 @@ struct PropertyView: View {
         VStack {
             ZStack {
                 List {
-                    ForEach(roomItemMap.sorted(by: { $0.key < $1.key }), id: \.key) { roomName, items in
-                        Section(roomName) {
+                    ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
+                        Section(room.name ?? "Untitled Room") {
                             ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
                                 NavigationLink(destination: ItemInfoView(item: item)) {
                                     Text(item.name ?? "Untitled")
@@ -140,11 +140,11 @@ struct PropertyView: View {
         roomItemMap = [:]
         if let items = property.items?.allObjects as? [MoveItem] {
             for item in items {
-                let roomName = item.room?.name ?? "Untitled"
-                if roomItemMap[roomName] == nil {
-                    roomItemMap[roomName] = [item]
+                let room = item.room!
+                if roomItemMap[room] == nil {
+                    roomItemMap[room] = [item]
                 } else {
-                    roomItemMap[roomName]?.append(item)
+                    roomItemMap[room]?.append(item)
                 }
             }
         }

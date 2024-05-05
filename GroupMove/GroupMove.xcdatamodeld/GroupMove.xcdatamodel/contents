@@ -19,6 +19,7 @@
     </entity>
     <entity name="Room" representedClassName="Room" syncable="YES" codeGenerationType="class">
         <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="orderIndex" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="moveItem" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MoveItem" inverseName="room" inverseEntity="MoveItem"/>
         <relationship name="property" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Property" inverseName="rooms" inverseEntity="Property"/>
     </entity>

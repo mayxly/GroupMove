@@ -19,24 +19,27 @@ struct RoomPickerView: View {
         "Bedroom 2",
     ]
     
-    @Binding var selectedRooms: [String]
     @State private var customRoom: String = ""
 
     @State private var isEditingList = false
+    @Binding var selectedRooms: [Room]
+
     @State private var showingRoomError = false
+    
+    private let stack = CoreDataStack.shared
     
     var body: some View {
         List() {
             Section("Your Rooms") {
                 ForEach(selectedRooms, id: \.self) { room in
                     HStack {
-                        Text(room)
+                        Text(room.name!)
                         Spacer()
                         Image(systemName: "checkmark")
                             .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
                     }
                     .onTapGesture {
-                        toggleSelection(for: room)
+                        toggleSelection(for: room.name!)
                     }
                     .onLongPressGesture() {
                         withAnimation {
@@ -51,7 +54,7 @@ struct RoomPickerView: View {
                             customRoom = ""
                             showingRoomError.toggle()
                         } else {
-                            selectedRooms.append(customRoom)
+                            selectedRooms.append(CreateRoom(customRoom))
                             customRoom = ""
                         }
                         
@@ -78,10 +81,10 @@ struct RoomPickerView: View {
     }
     
     private func toggleSelection(for room: String) {
-        if let index = selectedRooms.firstIndex(where: { $0 == room }) {
+        if let index = selectedRooms.firstIndex(where: { $0.name == room }) {
             selectedRooms.remove(at: index)
         } else {
-            selectedRooms.append(room)
+            selectedRooms.append(CreateRoom(room))
         }
     }
     
@@ -98,9 +101,21 @@ struct RoomPickerView: View {
             isEditingList = false
         }
     }
+    
+    private func CreateRoom(_ roomName: String) -> Room {
+        let newRoom = Room(context: stack.context)
+        newRoom.name = roomName
+        return newRoom
+    }
+}
+
+extension Array where Element == Room {
+    func contains(_ roomName: String) -> Bool {
+        return self.contains { $0.name == roomName }
+    }
 }
 
 #Preview {
-    @State var myRooms: [String] = ["Kitchen", "Living Room"]
+    @State var myRooms: [Room] = []
     return RoomPickerView(selectedRooms: $myRooms)
 }
