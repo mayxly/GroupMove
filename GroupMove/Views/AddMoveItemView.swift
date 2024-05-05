@@ -26,7 +26,7 @@ struct AddMoveItemView: View {
     init(passedMoveItem: MoveItem?, passedProperty: Property) {
         property = passedProperty
         if let allRooms = property.rooms?.allObjects as? [Room] {
-            rooms = allRooms
+            rooms = allRooms.sorted(by: { $0.orderIndex < $1.orderIndex })
         } else {
             rooms = []
         }
