@@ -113,10 +113,9 @@ struct AddPropertyView: View {
                                 .keyboardType(.decimalPad)
                                 .focused($priceKeyboardIsFocused)
                                 .onChange(of: budgetAmountText) { _ in
-                                    print(budgetAmountText)
                                     let components = budgetAmountText.components(separatedBy: ".")
-                                    if components.count == 2, components[1].count > 2 {
-                                        budgetAmountText = components[0] + "." + components[1].dropLast() // Stop from adding more
+                                    if components.count > 2 || (components.count == 2 && components[1].count > 2) {
+                                        budgetAmountText = String(budgetAmountText.dropLast())
                                     }
                                 }
                             .toolbar {
