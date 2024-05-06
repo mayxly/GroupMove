@@ -53,13 +53,13 @@ class PreviewManager {
         
         let microwave = MoveItem(context: context)
         microwave.name = "Microwave"
-        microwave.owner = ""
+        microwave.owner = "John Doe"
         microwave.dateCreated = Date()
         microwave.room = kitchen
         
         let lamp = MoveItem(context: context)
         lamp.name = "Lamp"
-        lamp.owner = ""
+        lamp.owner = "John Doe"
         lamp.dateCreated = Date()
         lamp.room = bedroom
         
@@ -79,7 +79,7 @@ class PreviewManager {
         
         let lamp = MoveItem(context: context)
         lamp.name = "Lamp"
-        lamp.owner = "May Ly"
+        lamp.owner = "John Doe"
         lamp.price = 0
         lamp.dateCreated = Date()
         lamp.room = bedroom

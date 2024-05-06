@@ -11,25 +11,34 @@ struct AddMoveItemView: View {
     @Environment(\.dismiss) var done
     @Environment(\.managedObjectContext) private var viewContext
     
+    // MoveItem Fields
     @State private var selectedMoveItem: MoveItem?
     @State private var name: String
+    @State private var notes: String
+    @State private var inputImage: UIImage?
+    @State private var image: Image?
+    @State private var showingImagePicker = false
+    private let hasBudget: Bool
     private var price: Float? {
         try? FloatingPointFormatStyle.number.parseStrategy.parse(priceAmountText)
     }
-    @State private var room: Room
-    @State private var owner: String
-    
-    @State private var showingNameError = false
     @State var priceAmountText: String
-    @FocusState var priceKeyboardIsFocused: Bool
-    
-    private var stack = CoreDataStack.shared
+    @State private var room: Room
+    private let rooms: [Room]
+    @State private var owner: String
+    var userList: [String]
     
     var property: Property
-    var rooms: [Room]
-    var hasBudget: Bool
     
-    var userList: [String]
+    // Alerts
+    @State private var showingNameError = false
+    
+    // Keyboard
+    @FocusState var priceKeyboardIsFocused: Bool
+    
+    // UI
+    private var stack = CoreDataStack.shared
+    
     
     init(passedMoveItem: MoveItem?, passedProperty: Property, currUser: String, userList: [String]) {
         property = passedProperty
@@ -47,11 +56,17 @@ struct AddMoveItemView: View {
         if let moveItem = passedMoveItem {
             _selectedMoveItem = State(initialValue: moveItem)
             _name = State(initialValue: moveItem.name ?? "")
+            _notes = State(initialValue: moveItem.notes ?? "")
+            if let imageData = moveItem.image, let uiImage = UIImage(data: imageData) {
+                _inputImage = State(initialValue: uiImage)
+                _image = State(initialValue: Image(uiImage: uiImage))
+            }
             _priceAmountText = State(initialValue: formatter.string(for: moveItem.price) ?? "0.00")
             _room = State(initialValue: moveItem.room!)
             _owner = State(initialValue: moveItem.owner ?? "")
         } else {
             _name = State(initialValue: "")
+            _notes = State(initialValue: "")
             _priceAmountText = State(initialValue: "")
             _room = State(initialValue: rooms[0])
             _owner = State(initialValue: currUser)
@@ -65,9 +80,34 @@ struct AddMoveItemView: View {
             Form {
                 Section {
                     TextField("Item Name", text: $name)
-                    .alert("Save Error", isPresented: $showingNameError) {
-                    } message: {
-                        Text("Please enter an item name.")
+                        .alert("Save Error", isPresented: $showingNameError) {
+                        } message: {
+                            Text("Please enter an item name.")
+                        }
+                } footer: {
+                    Text("Item Name is required")
+                        .font(.caption)
+                        .foregroundColor(name.isEmpty ? .red : .clear)
+                }
+                Section ("Notes") {
+                    TextEditor(text: $notes)
+                        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity)
+                    
+                }
+                Section {
+                    if image == nil {
+                        Button {
+                            self.showingImagePicker = true
+                        } label: {
+                            Text("Add a photo")
+                        }
+                    } else {
+                        Button {
+                            self.showingImagePicker = true
+                        } label: {image?
+                                .resizable()
+                                .scaledToFit()
+                        }
                     }
                 }
                 if hasBudget {
@@ -75,7 +115,7 @@ struct AddMoveItemView: View {
                         PriceTextField(priceAmountText: $priceAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
                     }
                 }
-                Section("Choose a Room") {
+                Section("Details") {
                     Picker("Room", selection: $room) {
                         if !rooms.isEmpty {
                             ForEach(rooms, id:\.self) {
@@ -86,8 +126,6 @@ struct AddMoveItemView: View {
                         }
                     }
                     .pickerStyle(.menu)
-                }
-                Section("Who owns it") {
                     Picker("Owner", selection: $owner) {
                         if !userList.isEmpty {
                             ForEach(userList, id:\.self) {
@@ -116,16 +154,30 @@ struct AddMoveItemView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showingImagePicker, onDismiss: loadImage) {
+              ImagePicker(image: $inputImage)
+            }
         }
     }
+}
+
+// MARK: Loading image and creating a new destination
+extension AddMoveItemView {
+    private func loadImage() {
+      guard let inputImage = inputImage else { return }
+      image = Image(uiImage: inputImage)
+    }
     
-    func saveItem() {
+    private func saveItem() {
         withAnimation {
             if selectedMoveItem == nil {
                 selectedMoveItem = MoveItem(context: viewContext)
             }
             
             selectedMoveItem?.name = name
+            selectedMoveItem?.notes = notes
+            let imageData = inputImage?.jpegData(compressionQuality: 0.8)
+            selectedMoveItem?.image = imageData
             selectedMoveItem?.price = Float(price ?? 0)
             selectedMoveItem?.room = room
             selectedMoveItem?.dateCreated = Date()
@@ -138,8 +190,6 @@ struct AddMoveItemView: View {
         done()
     }
 }
-
-
 
 #Preview {
     var viewContext = CoreDataStack.shared.context
