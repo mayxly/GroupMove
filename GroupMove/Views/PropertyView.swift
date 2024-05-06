@@ -29,10 +29,14 @@ struct PropertyView: View {
             ZStack {
                 List {
                     ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
-                        Section(room.name ?? "Untitled Room") {
-                            ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
-                                NavigationLink(destination: ItemInfoView(item: item, propertyHasBudget: property.hasBudget)) {
-                                    Text(item.name ?? "Untitled")
+                        if let roomName = room.name, items.count > 0, let _ = items[0].name {
+                            Section(roomName) {
+                                ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
+                                    if let itemName = item.name {
+                                        NavigationLink(destination: ItemInfoView(item: item, propertyHasBudget: property.hasBudget)) {
+                                            Text(itemName)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -122,7 +126,9 @@ struct PropertyView: View {
               )
             }
         }
-        .sheet(isPresented: $showEditPropertySheet) {
+        .sheet(isPresented: $showEditPropertySheet, onDismiss: {
+            generateRoomAndItemMapping()
+        }) {
             AddPropertyView(passedProperty: property)
         }
         .onAppear {
@@ -137,6 +143,7 @@ struct PropertyView: View {
     }
     
     private func generateRoomAndItemMapping() {
+        print("Updating map")
         roomItemMap = [:]
         if let items = property.items?.allObjects as? [MoveItem] {
             for item in items {

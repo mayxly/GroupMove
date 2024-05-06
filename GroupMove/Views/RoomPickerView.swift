@@ -26,6 +26,10 @@ struct RoomPickerView: View {
     @State private var showingCustomRoomError = false
     @State private var showingNoRoomError = false
     
+    // Room deletion
+    @State private var roomWithItemsAlert = false
+    @State private var pendingDeleteRoomIndex = 0
+    
     private let stack = CoreDataStack.shared
 
     // Custom back button
@@ -98,14 +102,37 @@ struct RoomPickerView: View {
         } message: {
             Text("There must be at least 1 room in the property.")
         }
+        .alert("Delete Room", isPresented: $roomWithItemsAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Yes", role: .destructive) {
+                deleteRoomWithItems(pendingDeleteRoomIndex)
+            }
+        } message: {
+            Text("Are you sure you want to delete a room with items in it?")
+        }
     }
     
     private func toggleSelection(for room: String) {
         if let index = selectedRooms.firstIndex(where: { $0.name == room }) {
-            selectedRooms.remove(at: index)
+            if selectedRooms[index].moveItem?.count ?? 0 > 0 {
+                pendingDeleteRoomIndex = index
+                roomWithItemsAlert.toggle()
+            } else {
+                selectedRooms.remove(at: index)
+            }
         } else {
             selectedRooms.append(CreateRoom(room))
         }
+    }
+    
+    private func deleteRoomWithItems(_ index: Int) {
+        let pendingRoom = selectedRooms[index]
+        if let moveItems = pendingRoom.moveItem?.allObjects as? [MoveItem] {
+            for item in moveItems {
+                stack.deleteMoveItem(item)
+            }
+        }
+        selectedRooms.remove(at: index)
     }
     
     private func isValidRoom(for room: String) -> Bool {
