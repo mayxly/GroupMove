@@ -43,13 +43,15 @@ struct HomeView: View {
                                             Text(home.name ?? "Property")
                                                 .bold()
                                                 .padding(.horizontal, 8)
-                                            Spacer()
-                                            Image(systemName: "person.2.fill")
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(width: 20)
-                                                .foregroundColor(.gray.opacity(0.5))
-                                                .padding(.trailing, 12)
+                                            if home.isShared {
+                                                Spacer()
+                                                Image(systemName: "person.2.fill")
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fit)
+                                                    .frame(width: 20)
+                                                    .foregroundColor(.gray.opacity(0.5))
+                                                    .padding(.trailing, 12)
+                                            }
                                         }
                                     }
                                 }
