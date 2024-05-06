@@ -18,6 +18,7 @@ struct AddMoveItemView: View {
     @State private var inputImage: UIImage?
     @State private var image: Image?
     @State private var showingImagePicker = false
+    @State private var hasEditedName: Bool = false
     private let hasBudget: Bool
     private var price: Float? {
         try? FloatingPointFormatStyle.number.parseStrategy.parse(priceAmountText)
@@ -80,14 +81,23 @@ struct AddMoveItemView: View {
             Form {
                 Section {
                     TextField("Item Name", text: $name)
+                        .disabled(priceKeyboardIsFocused)
+                        .onTapGesture {
+                            priceKeyboardIsFocused = false
+                        }
+                        .onSubmit {
+                            hasEditedName = true
+                        }
                         .alert("Save Error", isPresented: $showingNameError) {
                         } message: {
                             Text("Please enter an item name.")
                         }
                 } footer: {
-                    Text("Item Name is required")
-                        .font(.caption)
-                        .foregroundColor(name.isEmpty ? .red : .clear)
+                    if hasEditedName {
+                        Text("Item name is required")
+                            .font(.caption)
+                            .foregroundColor(name.isEmpty ? .red : .clear)
+                    }
                 }
                 Section ("Notes") {
                     TextEditor(text: $notes)
@@ -158,6 +168,7 @@ struct AddMoveItemView: View {
               ImagePicker(image: $inputImage)
             }
         }
+        .interactiveDismissDisabled()
     }
 }
 

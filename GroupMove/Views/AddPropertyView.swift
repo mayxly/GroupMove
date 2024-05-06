@@ -103,11 +103,18 @@ struct AddPropertyView: View {
                                 } message: {
                                     Text("Please enter a property name.")
                                 }
-                        }
+                                .disabled(priceKeyboardIsFocused)
+                                .onTapGesture {
+                                    priceKeyboardIsFocused = false
+                                }
+                            }
                     }.listRowSeparator(.hidden)
                     Section(header: Text("Budget"),
                             footer: Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")) {
                         Toggle("Add Budget", isOn: $hasBudget)
+                            .onChange(of: hasBudget) { newValue in
+                                budgetAmountText = ""
+                            }
                         if hasBudget {
                             PriceTextField(priceAmountText: $budgetAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
                         }
@@ -168,6 +175,7 @@ struct AddPropertyView: View {
                 }
             }
         }
+        .interactiveDismissDisabled()
     }
     
     private func saveProperty() {

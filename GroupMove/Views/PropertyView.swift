@@ -45,36 +45,37 @@ struct PropertyView: View {
                     List {
                         // Rooms and Items
                         ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
-                            if let roomName = room.name, items.count > 0, let _ = items[0].name {
-                                Section(roomName) {
-                                    ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
-                                        if let itemName = item.name {
-                                            NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
-                                                Text(itemName)
-                                            }
+                        if let roomName = room.name, items.count > 0, let _ = items[0].name {
+                            Section(roomName) {
+                                ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
+                                    if let itemName = item.name {
+                                        NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
+                                            Text(itemName)
                                         }
                                     }
                                 }
                             }
                         }
+                    }
                         
                         // Share
                         if roomItemMap.count > 0 {
                             if let share = share {
                                 if share.participants.count > 1 {
-                                    Section("Participants") {
+                                    Section("Roommates") {
                                         ForEach(share.participants, id: \.self) { participant in
-                                            VStack(alignment: .leading) {
-                                                Text(participant.userIdentity.nameComponents?.formatted(.name(style: .long)) ?? "")
-                                                    .font(.headline)
-                                                Text("Acceptance Status: \(string(for: participant.acceptanceStatus))")
-                                                    .font(.subheadline)
-                                                Text("Role: \(string(for: participant.role))")
-                                                    .font(.subheadline)
-                                                Text("Permissions: \(string(for: participant.permission))")
-                                                    .font(.subheadline)
+                                            if participant.acceptanceStatus == .accepted {
+                                                if let user = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
+                                                    HStack() {
+                                                        Text(user)
+                                                            .font(.headline)
+                                                        Spacer()
+                                                        if user == getCurrUser() {
+                                                            Text("(me)")
+                                                        }
+                                                    }
+                                                }
                                             }
-                                            .padding(.bottom, 8)
                                         }
                                     }
                                 }
