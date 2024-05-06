@@ -33,7 +33,7 @@ struct PropertyView: View {
                             Section(roomName) {
                                 ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
                                     if let itemName = item.name {
-                                        NavigationLink(destination: ItemInfoView(item: item, propertyHasBudget: property.hasBudget)) {
+                                        NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
                                             Text(itemName)
                                         }
                                     }
