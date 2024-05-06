@@ -109,41 +109,7 @@ struct AddPropertyView: View {
                             footer: Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")) {
                         Toggle("Add Budget", isOn: $hasBudget)
                         if hasBudget {
-                            TextField("$0.00", text: $budgetAmountText)
-                                .keyboardType(.decimalPad)
-                                .focused($priceKeyboardIsFocused)
-                                .onChange(of: budgetAmountText) { _ in
-                                    if budgetAmountText == "." {
-                                        budgetAmountText = "0."
-                                    }
-                                    let components = budgetAmountText.components(separatedBy: ".")
-                                    if components.count == 1 && components[0].count > 1 {
-                                        if let noLeadingZeros = Int(components[0]) {
-                                            budgetAmountText = String(noLeadingZeros)
-                                        }
-                                    }
-                                    if components.count > 2 || (components.count == 2 && components[1].count > 2) {
-                                        budgetAmountText = String(budgetAmountText.dropLast())
-                                    }
-                                }
-                            .toolbar {
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    Spacer()
-                                    Button("Done") {
-                                        priceKeyboardIsFocused.toggle()
-                                        let components = budgetAmountText.components(separatedBy: ".")
-                                        if components.count == 2 && components[1].count < 2 {
-                                            if components[1] == "" {
-                                                budgetAmountText += "00"
-                                            } else {
-                                                budgetAmountText += "0"
-                                            }
-                                        } else {
-                                            budgetAmountText += ".00"
-                                        }
-                                    }
-                                }
-                            }
+                            PriceTextField(priceAmountText: $budgetAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
                         }
                     }
                     Section("Rooms") {

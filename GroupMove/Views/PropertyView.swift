@@ -140,11 +140,12 @@ struct PropertyView: View {
         roomItemMap = [:]
         if let items = property.items?.allObjects as? [MoveItem] {
             for item in items {
-                let room = item.room!
-                if roomItemMap[room] == nil {
-                    roomItemMap[room] = [item]
-                } else {
-                    roomItemMap[room]?.append(item)
+                if let room = item.room {
+                    if roomItemMap[room] == nil {
+                        roomItemMap[room] = [item]
+                    } else {
+                        roomItemMap[room]?.append(item)
+                    }
                 }
             }
         }
