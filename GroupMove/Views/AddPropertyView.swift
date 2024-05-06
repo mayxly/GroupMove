@@ -14,12 +14,16 @@ struct AddPropertyView: View {
     @State private var selectedProperty: Property?
     @State private var name: String
     @State private var hasBudget: Bool
-    @State private var budgetAmount: Float?
+    private var budgetAmount: Float? {
+        try? FloatingPointFormatStyle.number.parseStrategy.parse(budgetAmountText)
+    }
+    @State private var budgetAmountText: String
     @State private var selectedColor: String
     @State private var selectedRooms: [Room]
     
     @State private var shouldAddDefaultRooms: Bool
     
+    @FocusState var priceKeyboardIsFocused: Bool
     @State private var showingNameError = false
     
     private var stack = CoreDataStack.shared
@@ -48,7 +52,11 @@ struct AddPropertyView: View {
             _selectedProperty = State(initialValue: property)
             _name = State(initialValue: property.name ?? "")
             _hasBudget = State(initialValue: property.hasBudget)
-            _budgetAmount = State(initialValue: Float(property.budget))
+            // Budget
+            let formatter = NumberFormatter()
+            formatter.minimumFractionDigits = 2
+            formatter.maximumFractionDigits = 2
+            _budgetAmountText = State(initialValue: formatter.string(for: property.budget) ?? "0.00")
             _selectedColor = State(initialValue: property.color!)
             
             // Init rooms and store existing rooms
@@ -57,7 +65,7 @@ struct AddPropertyView: View {
         } else {
             _name = State(initialValue: "")
             _hasBudget = State(initialValue: false)
-            _budgetAmount = State(initialValue: nil)
+            _budgetAmountText = State(initialValue: "")
             _selectedColor = State(initialValue: "00A5E3")
             _selectedRooms = State(initialValue: [])
             _shouldAddDefaultRooms = State(initialValue: true)
@@ -101,8 +109,7 @@ struct AddPropertyView: View {
                             footer: Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")) {
                         Toggle("Add Budget", isOn: $hasBudget)
                         if hasBudget {
-                            TextField("$0.00", value: $budgetAmount, format: .number)
-                                .keyboardType(.decimalPad)
+                            PriceTextField(priceAmountText: $budgetAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
                         }
                     }
                     Section("Rooms") {

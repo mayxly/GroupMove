@@ -31,7 +31,7 @@ struct PropertyView: View {
                     ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
                         Section(room.name ?? "Untitled Room") {
                             ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
-                                NavigationLink(destination: ItemInfoView(item: item)) {
+                                NavigationLink(destination: ItemInfoView(item: item, propertyHasBudget: property.hasBudget)) {
                                     Text(item.name ?? "Untitled")
                                 }
                             }
@@ -140,11 +140,12 @@ struct PropertyView: View {
         roomItemMap = [:]
         if let items = property.items?.allObjects as? [MoveItem] {
             for item in items {
-                let room = item.room!
-                if roomItemMap[room] == nil {
-                    roomItemMap[room] = [item]
-                } else {
-                    roomItemMap[room]?.append(item)
+                if let room = item.room {
+                    if roomItemMap[room] == nil {
+                        roomItemMap[room] = [item]
+                    } else {
+                        roomItemMap[room]?.append(item)
+                    }
                 }
             }
         }
