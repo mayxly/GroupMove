@@ -24,7 +24,6 @@ struct AddPropertyView: View {
     @State private var shouldAddDefaultRooms: Bool
     
     @FocusState var priceKeyboardIsFocused: Bool
-    @FocusState var nameKeyboardIsFocused: Bool
     @State private var showingNameError = false
     
     private var stack = CoreDataStack.shared
@@ -100,7 +99,6 @@ struct AddPropertyView: View {
                                 .frame(height: 40)
                             TextField("Property Name", text: $name)
                                 .multilineTextAlignment(.center)
-                                .focused($nameKeyboardIsFocused)
                                 .alert("Save Error", isPresented: $showingNameError) {
                                 } message: {
                                     Text("Please enter a property name.")
@@ -114,6 +112,9 @@ struct AddPropertyView: View {
                     Section(header: Text("Budget"),
                             footer: Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")) {
                         Toggle("Add Budget", isOn: $hasBudget)
+                            .onChange(of: hasBudget) { newValue in
+                                budgetAmountText = ""
+                            }
                         if hasBudget {
                             PriceTextField(priceAmountText: $budgetAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
                         }
@@ -174,6 +175,7 @@ struct AddPropertyView: View {
                 }
             }
         }
+        .interactiveDismissDisabled()
     }
     
     private func saveProperty() {

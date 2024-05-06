@@ -80,6 +80,10 @@ struct AddMoveItemView: View {
             Form {
                 Section {
                     TextField("Item Name", text: $name)
+                        .disabled(priceKeyboardIsFocused)
+                        .onTapGesture {
+                            priceKeyboardIsFocused = false
+                        }
                         .alert("Save Error", isPresented: $showingNameError) {
                         } message: {
                             Text("Please enter an item name.")
@@ -158,6 +162,7 @@ struct AddMoveItemView: View {
               ImagePicker(image: $inputImage)
             }
         }
+        .interactiveDismissDisabled()
     }
 }
 
