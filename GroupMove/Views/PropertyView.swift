@@ -94,11 +94,6 @@ struct PropertyView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
               Button {
-                  if !stack.isShared(object: property) {
-                    Task {
-                      await createShare(property)
-                    }
-                  }
                   showShareSheet = true
               } label: {
                 Image(systemName: "square.and.arrow.up")
@@ -116,7 +111,7 @@ struct PropertyView: View {
         .sheet(isPresented: $showAddItemSheet, onDismiss: {
             generateRoomAndItemMapping()
         }){
-            AddMoveItemView(passedMoveItem: nil, passedProperty: property)
+            AddMoveItemView(passedMoveItem: nil, passedProperty: property, currUser: getCurrUser(), userList: getAllParticipants())
         }
         .sheet(isPresented: $showShareSheet) {
             if let share = share {
@@ -133,6 +128,11 @@ struct PropertyView: View {
         .onAppear {
             generateRoomAndItemMapping()
             self.share = stack.getShare(property)
+            if !stack.isShared(object: property) {
+                Task {
+                    await createShare(property)
+                }
+            }
         }
     }
     
@@ -160,6 +160,25 @@ struct PropertyView: View {
       } catch {
         print("Failed to create share")
       }
+    }
+    
+    private func getCurrUser() -> String {
+        var user = ""
+        if let ownerName = share?.currentUserParticipant?.userIdentity.nameComponents?.formatted(.name(style: .long)) {
+            user = ownerName
+        }
+        return user
+    }
+    
+    private func getAllParticipants() -> [String] {
+        var users = [String]()
+        
+        for participant in share?.participants ?? [] {
+            if let participantName = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
+                users.append(participantName)
+            }
+        }
+        return users
     }
 }
 

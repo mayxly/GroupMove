@@ -29,7 +29,9 @@ struct AddMoveItemView: View {
     var rooms: [Room]
     var hasBudget: Bool
     
-    init(passedMoveItem: MoveItem?, passedProperty: Property) {
+    var userList: [String]
+    
+    init(passedMoveItem: MoveItem?, passedProperty: Property, currUser: String, userList: [String]) {
         property = passedProperty
         if let allRooms = property.rooms?.allObjects as? [Room] {
             rooms = allRooms.sorted(by: { $0.orderIndex < $1.orderIndex })
@@ -52,8 +54,10 @@ struct AddMoveItemView: View {
             _name = State(initialValue: "")
             _priceAmountText = State(initialValue: "")
             _room = State(initialValue: rooms[0])
-            _owner = State(initialValue: "")
+            _owner = State(initialValue: currUser)
         }
+        
+        self.userList = userList
     }
     
     var body: some View {
@@ -71,11 +75,23 @@ struct AddMoveItemView: View {
                         PriceTextField(priceAmountText: $priceAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
                     }
                 }
-                Section("Room") {
+                Section("Choose a Room") {
                     Picker("Room", selection: $room) {
                         if !rooms.isEmpty {
                             ForEach(rooms, id:\.self) {
                                 Text($0.name ?? "Untitled")
+                            }
+                        } else {
+                            Text("Untitled").tag(Room())
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+                Section("Who owns it") {
+                    Picker("Owner", selection: $owner) {
+                        if !userList.isEmpty {
+                            ForEach(userList, id:\.self) {
+                                Text($0)
                             }
                         } else {
                             Text("Untitled").tag(Room())
@@ -113,7 +129,7 @@ struct AddMoveItemView: View {
             selectedMoveItem?.price = Float(price ?? 0)
             selectedMoveItem?.room = room
             selectedMoveItem?.dateCreated = Date()
-            selectedMoveItem?.owner = name
+            selectedMoveItem?.owner = owner
             
             property.addToItems(selectedMoveItem!)
             
@@ -130,5 +146,5 @@ struct AddMoveItemView: View {
     
     let property = PreviewManager.shared.getBasicPropertyWithRooms(context: viewContext)
     
-    return AddMoveItemView(passedMoveItem: nil, passedProperty: property)
+    return AddMoveItemView(passedMoveItem: nil, passedProperty: property, currUser: "Default User", userList: ["Default User"])
 }
