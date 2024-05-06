@@ -29,23 +29,34 @@ struct PriceTextField: View {
                     priceAmountText = String(priceAmountText.dropLast())
                 }
             }
-            .toolbar {
+        .toolbar {
+            if priceKeyboardIsFocused {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button("Done") {
                         priceKeyboardIsFocused.toggle()
-                        let components = priceAmountText.components(separatedBy: ".")
-                        if components.count == 2 && components[1].count < 2 {
-                            if components[1] == "" {
-                                priceAmountText += "00"
-                            } else {
-                                priceAmountText += "0"
-                            }
-                        } else {
-                            priceAmountText += ".00"
-                        }
+                        priceAmountText = makePricePretty(for: priceAmountText)
                     }
                 }
             }
+        }
     }
 }
+    
+extension PriceTextField {
+    func makePricePretty(for priceText: String) -> String {
+        var res = priceText
+        let components = priceText.components(separatedBy: ".")
+        if components.count == 2 && components[1].count < 2 {
+            if components[1] == "" {
+                res += "00"
+            } else {
+                res += "0"
+            }
+        } else {
+            res += ".00"
+        }
+        return res
+    }
+}
+
