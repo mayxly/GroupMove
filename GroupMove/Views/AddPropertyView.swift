@@ -174,6 +174,7 @@ struct AddPropertyView: View {
         withAnimation {
             if selectedProperty == nil {
                 selectedProperty = Property(context: viewContext)
+                selectedProperty?.isShared = false
             }
             
             guard let selectedProperty else { return }
