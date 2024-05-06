@@ -28,20 +28,29 @@ struct HomeView: View {
                             Section() {
                                 ForEach(homes, id: \.self) { home in
                                     NavigationLink(destination: PropertyView(property: home)) {
-                                        ZStack {
-                                            Circle()
-                                                .frame(width: 32)
-                                                .padding(.vertical, 4)
-                                                .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
-                                            Image(systemName: "house.fill")
+                                        HStack {
+                                            ZStack {
+                                                Circle()
+                                                    .frame(width: 32)
+                                                    .padding(.vertical, 4)
+                                                    .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
+                                                Image(systemName: "house.fill")
+                                                    .resizable()
+                                                    .frame(width: 16, height: 16)
+                                                    .padding(.vertical, 4)
+                                                    .foregroundColor(.white)
+                                            }
+                                            Text(home.name ?? "Property")
+                                                .bold()
+                                                .padding(.horizontal, 8)
+                                            Spacer()
+                                            Image(systemName: "person.2.fill")
                                                 .resizable()
-                                                .frame(width: 16, height: 16)
-                                                .padding(.vertical, 4)
-                                                .foregroundColor(.white)
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 20)
+                                                .foregroundColor(.gray.opacity(0.5))
+                                                .padding(.trailing, 12)
                                         }
-                                        Text(home.name ?? "Property")
-                                            .bold()
-                                            .padding(.horizontal, 8)
                                     }
                                 }
                                 .onDelete(perform: delete)
