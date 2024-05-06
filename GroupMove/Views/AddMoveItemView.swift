@@ -13,6 +13,7 @@ struct AddMoveItemView: View {
     
     @State private var selectedMoveItem: MoveItem?
     @State private var name: String
+    @State private var notes: String
     private var price: Float? {
         try? FloatingPointFormatStyle.number.parseStrategy.parse(priceAmountText)
     }
@@ -47,11 +48,13 @@ struct AddMoveItemView: View {
         if let moveItem = passedMoveItem {
             _selectedMoveItem = State(initialValue: moveItem)
             _name = State(initialValue: moveItem.name ?? "")
+            _notes = State(initialValue: moveItem.notes ?? "")
             _priceAmountText = State(initialValue: formatter.string(for: moveItem.price) ?? "0.00")
             _room = State(initialValue: moveItem.room!)
             _owner = State(initialValue: moveItem.owner ?? "")
         } else {
             _name = State(initialValue: "")
+            _notes = State(initialValue: "")
             _priceAmountText = State(initialValue: "")
             _room = State(initialValue: rooms[0])
             _owner = State(initialValue: currUser)
@@ -65,17 +68,22 @@ struct AddMoveItemView: View {
             Form {
                 Section {
                     TextField("Item Name", text: $name)
-                    .alert("Save Error", isPresented: $showingNameError) {
-                    } message: {
-                        Text("Please enter an item name.")
-                    }
+                        .alert("Save Error", isPresented: $showingNameError) {
+                        } message: {
+                            Text("Please enter an item name.")
+                        }
+                }
+                Section ("Notes") {
+                    TextEditor(text: $notes)
+                        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity)
+                    
                 }
                 if hasBudget {
                     Section("Price") {
                         PriceTextField(priceAmountText: $priceAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
                     }
                 }
-                Section("Choose a Room") {
+                Section("Details") {
                     Picker("Room", selection: $room) {
                         if !rooms.isEmpty {
                             ForEach(rooms, id:\.self) {
@@ -86,8 +94,6 @@ struct AddMoveItemView: View {
                         }
                     }
                     .pickerStyle(.menu)
-                }
-                Section("Who owns it") {
                     Picker("Owner", selection: $owner) {
                         if !userList.isEmpty {
                             ForEach(userList, id:\.self) {
@@ -126,6 +132,7 @@ struct AddMoveItemView: View {
             }
             
             selectedMoveItem?.name = name
+            selectedMoveItem?.notes = notes
             selectedMoveItem?.price = Float(price ?? 0)
             selectedMoveItem?.room = room
             selectedMoveItem?.dateCreated = Date()
