@@ -191,14 +191,15 @@ extension PropertyView {
     }
     
     private func createShare(_ property: Property) async {
-      do {
-        let (_, share, _) =
-        try await stack.persistentContainer.share([property], to: nil)
-        share[CKShare.SystemFieldKey.title] = property.name
-        self.share = share
-      } catch {
-        print("Failed to create share")
-      }
+        do {
+            let (_, share, _) =
+            try await stack.persistentContainer.share([property], to: nil)
+            share[CKShare.SystemFieldKey.title] = property.name
+            self.share = share
+            property.isShared = true
+        } catch {
+            print("Failed to create share")
+        }
     }
     
     private func getCurrUser() -> String {
