@@ -28,10 +28,17 @@ struct HomeView: View {
                             Section() {
                                 ForEach(homes, id: \.self) { home in
                                     NavigationLink(destination: PropertyView(property: home)) {
-                                        Circle()
-                                            .frame(width: 32)
-                                            .padding(.vertical, 4)
-                                            .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
+                                        ZStack {
+                                            Circle()
+                                                .frame(width: 32)
+                                                .padding(.vertical, 4)
+                                                .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
+                                            Image(systemName: "house.fill")
+                                                .resizable()
+                                                .frame(width: 16, height: 16)
+                                                .padding(.vertical, 4)
+                                                .foregroundColor(.white)
+                                        }
                                         Text(home.name ?? "Property")
                                             .bold()
                                             .padding(.horizontal, 8)
@@ -85,7 +92,7 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showAddPropertySheet) {
-                AddPropertyView()
+                AddPropertyView(passedProperty: nil)
             }
         }
     }

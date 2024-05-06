@@ -14,7 +14,7 @@ struct PropertyView: View {
     
     @ObservedObject var property: Property
     
-    @State private var roomItemMap = [String: [MoveItem]]()
+    @State private var roomItemMap = [Room: [MoveItem]]()
     
     @State private var showAddItemSheet = false
     @State private var showEditPropertySheet = false
@@ -28,10 +28,33 @@ struct PropertyView: View {
         VStack {
             ZStack {
                 List {
-                    ForEach(roomItemMap.sorted(by: { $0.key < $1.key }), id: \.key) { roomName, items in
-                        Section(roomName) {
+                    ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
+                        Section(room.name ?? "Untitled Room") {
                             ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
-                                Text(item.name ?? "Untitled")
+                                NavigationLink(destination: ItemInfoView(item: item, propertyHasBudget: property.hasBudget)) {
+                                    Text(item.name ?? "Untitled")
+                                }
+                            }
+                        }
+                    }
+                    if roomItemMap.count > 0 {
+                        if let share = share {
+                            if share.participants.count > 1 {
+                                Section("Participants") {
+                                    ForEach(share.participants, id: \.self) { participant in
+                                        VStack(alignment: .leading) {
+                                            Text(participant.userIdentity.nameComponents?.formatted(.name(style: .long)) ?? "")
+                                                .font(.headline)
+                                            Text("Acceptance Status: \(string(for: participant.acceptanceStatus))")
+                                                .font(.subheadline)
+                                            Text("Role: \(string(for: participant.role))")
+                                                .font(.subheadline)
+                                            Text("Permissions: \(string(for: participant.permission))")
+                                                .font(.subheadline)
+                                        }
+                                        .padding(.bottom, 8)
+                                    }
+                                }
                             }
                         }
                     }
@@ -105,10 +128,11 @@ struct PropertyView: View {
             }
         }
         .sheet(isPresented: $showEditPropertySheet) {
-            AddPropertyView()
+            AddPropertyView(passedProperty: property)
         }
         .onAppear {
             generateRoomAndItemMapping()
+            self.share = stack.getShare(property)
         }
     }
     
@@ -116,11 +140,12 @@ struct PropertyView: View {
         roomItemMap = [:]
         if let items = property.items?.allObjects as? [MoveItem] {
             for item in items {
-                let roomName = item.room?.name ?? "Untitled"
-                if roomItemMap[roomName] == nil {
-                    roomItemMap[roomName] = [item]
-                } else {
-                    roomItemMap[roomName]?.append(item)
+                if let room = item.room {
+                    if roomItemMap[room] == nil {
+                        roomItemMap[room] = [item]
+                    } else {
+                        roomItemMap[room]?.append(item)
+                    }
                 }
             }
         }
@@ -143,8 +168,56 @@ struct PropertyView_Previews: PreviewProvider {
     static var viewContext = CoreDataStack.shared.context
     
     static var previews: some View {
-        let property = PreviewManager.shared.getBasicPropertyWithRooms(context: viewContext)
+        let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: viewContext)
         
         return PropertyView(property: property)
     }
 }
+
+extension PropertyView {
+  private func string(for permission: CKShare.ParticipantPermission) -> String {
+    switch permission {
+    case .unknown:
+      return "Unknown"
+    case .none:
+      return "None"
+    case .readOnly:
+      return "Read-Only"
+    case .readWrite:
+      return "Read-Write"
+    @unknown default:
+      fatalError("A new value added to CKShare.Participant.Permission")
+    }
+  }
+
+  private func string(for role: CKShare.ParticipantRole) -> String {
+    switch role {
+    case .owner:
+      return "Owner"
+    case .privateUser:
+      return "Private User"
+    case .publicUser:
+      return "Public User"
+    case .unknown:
+      return "Unknown"
+    @unknown default:
+      fatalError("A new value added to CKShare.Participant.Role")
+    }
+  }
+
+  private func string(for acceptanceStatus: CKShare.ParticipantAcceptanceStatus) -> String {
+    switch acceptanceStatus {
+    case .accepted:
+      return "Accepted"
+    case .removed:
+      return "Removed"
+    case .pending:
+      return "Invited"
+    case .unknown:
+      return "Unknown"
+    @unknown default:
+      fatalError("A new value added to CKShare.Participant.AcceptanceStatus")
+    }
+  }
+}
+

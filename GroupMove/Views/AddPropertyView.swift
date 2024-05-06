@@ -12,12 +12,18 @@ struct AddPropertyView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @State private var selectedProperty: Property?
-    @State private var name = ""
-    @State private var addBudget = false
-    @State private var budgetAmount: Float?
-    @State private var selectedColor = "00A5E3"
-    @State private var selectedRooms: [String] = ["Kitchen", "Living Room"]
+    @State private var name: String
+    @State private var hasBudget: Bool
+    private var budgetAmount: Float? {
+        try? FloatingPointFormatStyle.number.parseStrategy.parse(budgetAmountText)
+    }
+    @State private var budgetAmountText: String
+    @State private var selectedColor: String
+    @State private var selectedRooms: [Room]
     
+    @State private var shouldAddDefaultRooms: Bool
+    
+    @FocusState var priceKeyboardIsFocused: Bool
     @State private var showingNameError = false
     
     private var stack = CoreDataStack.shared
@@ -41,18 +47,51 @@ struct AddPropertyView: View {
         GridItem(.adaptive(minimum: 40))
     ]
     
+    init(passedProperty: Property?) {
+        if let property = passedProperty {
+            _selectedProperty = State(initialValue: property)
+            _name = State(initialValue: property.name ?? "")
+            _hasBudget = State(initialValue: property.hasBudget)
+            // Budget
+            let formatter = NumberFormatter()
+            formatter.minimumFractionDigits = 2
+            formatter.maximumFractionDigits = 2
+            _budgetAmountText = State(initialValue: formatter.string(for: property.budget) ?? "0.00")
+            _selectedColor = State(initialValue: property.color!)
+            
+            // Init rooms and store existing rooms
+            _selectedRooms = State(initialValue: (passedProperty?.rooms?.allObjects as? [Room] ?? []).sorted(by: { $0.orderIndex < $1.orderIndex }))
+            _shouldAddDefaultRooms = State(initialValue: false)
+        } else {
+            _name = State(initialValue: "")
+            _hasBudget = State(initialValue: false)
+            _budgetAmountText = State(initialValue: "")
+            _selectedColor = State(initialValue: "00A5E3")
+            _selectedRooms = State(initialValue: [])
+            _shouldAddDefaultRooms = State(initialValue: true)
+        }
+    }
+    
     var body: some View {
         NavigationView {
             VStack() {
                 Form {
                     Section() {
-                        HStack {
-                            Spacer()
-                            Circle()
-                                .frame(width: 100)
-                                .foregroundColor(Color(hex: selectedColor))
+                        ZStack {
+                            HStack {
+                                Spacer()
+                                Circle()
+                                    .frame(width: 100)
+                                    .foregroundColor(Color(hex: selectedColor))
+                                    .padding(.top, 10)
+                                Spacer()
+                            }
+                            Image(systemName: "house.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(.white)
                                 .padding(.top, 10)
-                            Spacer()
+                            
                         }
                         ZStack {
                             RoundedRectangle(cornerRadius: 10)
@@ -68,10 +107,9 @@ struct AddPropertyView: View {
                     }.listRowSeparator(.hidden)
                     Section(header: Text("Budget"),
                             footer: Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")) {
-                        Toggle("Add Budget", isOn: $addBudget)
-                        if addBudget {
-                            TextField("$0.00", value: $budgetAmount, format: .number)
-                                .keyboardType(.decimalPad)
+                        Toggle("Add Budget", isOn: $hasBudget)
+                        if hasBudget {
+                            PriceTextField(priceAmountText: $budgetAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
                         }
                     }
                     Section("Rooms") {
@@ -123,6 +161,12 @@ struct AddPropertyView: View {
                     }
                 }
             }
+            .onAppear {
+                if shouldAddDefaultRooms {
+                    addDefaultRooms()
+                    shouldAddDefaultRooms = false
+                }
+            }
         }
     }
     
@@ -135,13 +179,17 @@ struct AddPropertyView: View {
             guard let selectedProperty else { return }
             
             selectedProperty.name = name
-            selectedProperty.budget = budgetAmount ?? 0
             
-            // Create Rooms
-            for roomName in selectedRooms {
-                let newRoom = Room(context: viewContext)
-                newRoom.name = roomName
-                selectedProperty.addToRooms(newRoom)
+            selectedProperty.budget = budgetAmount ?? 0
+            selectedProperty.hasBudget = hasBudget
+            
+            selectedProperty.rooms = []
+            
+            var index = 0
+            for room in selectedRooms {
+                room.orderIndex = Int16(index)
+                selectedProperty.addToRooms(room)
+                index += 1
             }
             
             selectedProperty.dateCreated = Date()
@@ -152,6 +200,16 @@ struct AddPropertyView: View {
         done()
     }
     
+    private func addDefaultRooms() {
+        let kitchen = Room(context: stack.context)
+        kitchen.name = "Kitchen"
+        let livingRoom = Room(context: stack.context)
+        livingRoom.name = "Living Room"
+        
+        selectedRooms.append(kitchen)
+        selectedRooms.append(livingRoom)
+    }
+    
     private func isValidPropertyName(for name: String) -> Bool {
         if name == "" {
             return false
@@ -160,8 +218,14 @@ struct AddPropertyView: View {
     }
 }
 
+extension Array where Element == Room {
+    func joined(separator: String) -> String {
+        return self.map { $0.name! }.joined(separator: separator)
+    }
+}
+
 struct AddPropertyView_Previews: PreviewProvider {
     static var previews: some View {
-        AddPropertyView()
+        AddPropertyView(passedProperty: nil)
     }
 }

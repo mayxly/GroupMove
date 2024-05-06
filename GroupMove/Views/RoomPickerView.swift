@@ -19,95 +19,123 @@ struct RoomPickerView: View {
         "Bedroom 2",
     ]
     
-    @State private var customRooms: [String] = []
     @State private var customRoom: String = ""
 
-    @Binding var selectedRooms: [String]
+    @State private var isEditingList = false
+    @Binding var selectedRooms: [Room]
+    @State private var showingCustomRoomError = false
+    @State private var showingNoRoomError = false
     
-    @State private var showingRoomError = false
-    
+    private let stack = CoreDataStack.shared
+
+    // Custom back button
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    var backButton : some View { Button(action: {
+        if selectedRooms.count < 1 {
+            showingNoRoomError = true
+            return
+        }
+        self.presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "chevron.left")
+            Text("New Property")
+        }
+    }
+
     var body: some View {
-        List {
-            Section("Default Rooms") {
-                ForEach(defaultRooms, id: \.self) { room in
+        List() {
+            Section("Your Rooms") {
+                ForEach(selectedRooms, id: \.self) { room in
                     HStack {
-                        Text(room)
-                        if selectedRooms.contains(room) {
-                            Spacer()
-                            Image(systemName: "checkmark")
-                                .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                        }
+                        Text(room.name!)
+                        Spacer()
+                        Image(systemName: "checkmark")
+                            .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
                     }
                     .onTapGesture {
-                        toggleSelection(for: room)
+                        toggleSelection(for: room.name!)
                     }
-                }
-            }
-            Section("Custom Rooms") {
-                ForEach(customRooms, id: \.self) { room in
-                    HStack {
-                        if selectedRooms.contains(room) {
-                            Text(room)
-                            Spacer()
-                            Image(systemName: "checkmark")
-                                .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+                    .onLongPressGesture() {
+                        withAnimation {
+                            isEditingList = true
                         }
                     }
-                    .onTapGesture {
-                        toggleSelection(for: room)
-                    }
                 }
+                .onMove(perform: move)
                 TextField("Custom Room", text: $customRoom)
                     .onSubmit {
                         if !isValidRoom(for: customRoom) {
                             customRoom = ""
-                            showingRoomError.toggle()
+                            showingCustomRoomError.toggle()
                         } else {
-                            customRooms.append(customRoom)
-                            selectedRooms.append(customRoom)
+                            selectedRooms.append(CreateRoom(customRoom))
                             customRoom = ""
                         }
                         
                     }
-                    .alert("Save Error", isPresented: $showingRoomError) {
+                    .alert("Custom Room Error", isPresented: $showingCustomRoomError) {
                     } message: {
                         Text("The room you are trying to add already exists.")
                     }
             }
-        }
-        .onAppear {
-            makeCustomRooms()
-        }
-    }
-    
-    private func makeCustomRooms() {
-        for room in selectedRooms {
-            if !defaultRooms.contains(room) {
-                customRooms.append(room)
+            .environment(\.editMode, isEditingList ? .constant(.active) : .constant(.inactive))
+            Section("Default Rooms") {
+                ForEach(defaultRooms, id: \.self) { room in
+                    if !selectedRooms.contains(room) {
+                        HStack {
+                            Text(room)
+                        }
+                        .onTapGesture {
+                            toggleSelection(for: room)
+                        }
+                    }
+                }
             }
+        }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarItems(leading: backButton)
+        .alert("Save Error", isPresented: $showingNoRoomError) {
+        } message: {
+            Text("There must be at least 1 room in the property.")
         }
     }
     
     private func toggleSelection(for room: String) {
-        if let index = selectedRooms.firstIndex(where: { $0 == room }) {
+        if let index = selectedRooms.firstIndex(where: { $0.name == room }) {
             selectedRooms.remove(at: index)
-            if let index = customRooms.firstIndex(where: { $0 == room }) {
-                customRooms.remove(at: index)
-            }
         } else {
-            selectedRooms.append(room)
+            selectedRooms.append(CreateRoom(room))
         }
     }
     
     private func isValidRoom(for room: String) -> Bool {
-        if customRooms.contains(room) || defaultRooms.contains(room) {
+        if selectedRooms.contains(room) || defaultRooms.contains(room) {
             return false
         }
         return true
     }
+    
+    private func move(from source: IndexSet, to destination: Int) {
+        selectedRooms.move(fromOffsets: source, toOffset: destination)
+        withAnimation {
+            isEditingList = false
+        }
+    }
+    
+    private func CreateRoom(_ roomName: String) -> Room {
+        let newRoom = Room(context: stack.context)
+        newRoom.name = roomName
+        return newRoom
+    }
+}
+
+extension Array where Element == Room {
+    func contains(_ roomName: String) -> Bool {
+        return self.contains { $0.name == roomName }
+    }
 }
 
 #Preview {
-    @State var myRooms: [String] = []
+    @State var myRooms: [Room] = []
     return RoomPickerView(selectedRooms: $myRooms)
 }
