@@ -50,7 +50,7 @@ struct ItemInfoView: View {
                             .padding(.horizontal, 20)
                             .padding(.vertical, 4)
                             .foregroundColor(.white)
-                            .background(.black.opacity(0.3))
+                            .background(.gray.opacity(0.5))
                             .cornerRadius(8)
                     }
                     .padding(.horizontal)
