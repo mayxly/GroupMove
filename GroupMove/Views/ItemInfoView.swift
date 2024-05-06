@@ -10,6 +10,7 @@ import SwiftUI
 struct ItemInfoView: View {
     
     var item: MoveItem
+    var propertyHasBudget: Bool
     
     var body: some View {
         ScrollView {
@@ -35,10 +36,12 @@ struct ItemInfoView: View {
                                 .font(.title)
                                 .bold()
                             Spacer()
-                            if item.price == 0 {
-                                Text("Free")
-                            } else {
-                                Text("$"+String(format: "%.2f", item.price))
+                            if propertyHasBudget {
+                                if item.price == 0 {
+                                    Text("Free")
+                                } else {
+                                    Text("$"+String(format: "%.2f", item.price))
+                                }
                             }
                         }
                         Text("Added by \(item.owner ?? "Owner")")
@@ -70,5 +73,5 @@ struct ItemInfoView: View {
 #Preview {
     var viewContext = CoreDataStack.shared.context
     let item = PreviewManager.shared.getMoveItem(context: viewContext)
-    return ItemInfoView(item: item)
+    return ItemInfoView(item: item, propertyHasBudget: true)
 }
