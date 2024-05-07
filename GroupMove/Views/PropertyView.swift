@@ -68,6 +68,7 @@ struct PropertyView: View {
                 } label: {
                     Image(systemName: "plus.circle")
                 }
+                .disabled(!stack.canEdit(object: property))
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {

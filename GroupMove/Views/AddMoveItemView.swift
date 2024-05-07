@@ -111,9 +111,28 @@ struct AddMoveItemView: View {
                         if image == nil {
                             Text("Add a photo")
                         } else {
-                            image?
-                                .resizable()
-                                .scaledToFit()
+                            ZStack {
+                                image?
+                                    .resizable()
+                                    .scaledToFit()
+                                if image != nil {
+                                    VStack {
+                                        HStack {
+                                            Spacer()
+                                            Button(action: {
+                                                self.image = nil
+                                                self.inputImage = nil
+                                            }) {
+                                                Image(systemName: "xmark")
+                                                    .foregroundColor(.white)
+                                                    .font(.title)
+                                                    .padding()
+                                            }
+                                        }
+                                        Spacer()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
