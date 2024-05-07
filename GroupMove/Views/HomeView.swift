@@ -54,6 +54,7 @@ struct HomeView: View {
                                             }
                                         }
                                     }
+                                    .deleteDisabled(!stack.canDelete(object: home))
                                 }
                                 .onDelete(perform: delete)
                             } header: {
