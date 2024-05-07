@@ -44,22 +44,48 @@ struct PropertyView: View {
                     }
                     .padding(.top, 40)
                     
-                    roomAndItemView
-                    
-                    // Share
-                    if roomItemMap.count > 0 {
-                        if let share = share {
-                            if share.participants.count > 1 {
-                                Section("Roommates") {
-                                    ForEach(share.participants, id: \.self) { participant in
-                                        if participant.acceptanceStatus == .accepted {
-                                            if let user = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
-                                                HStack() {
-                                                    Text(user)
-                                                        .font(.headline)
-                                                    Spacer()
-                                                    if user == getCurrUser() {
-                                                        Text("(me)")
+                    List {
+                        // Rooms and Items
+                        ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
+                            if let roomName = room.name, items.count > 0, let _ = items[0].name {
+                                Section(roomName) {
+                                    ForEach(items, id: \.self.id) { item in
+                                        if let itemName = item.name, let itemID = item.id {
+                                            NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
+                                                Text(itemName)
+                                            }
+                                            .swipeActions {
+                                                Button(role: .destructive) {
+                                                    if let allItems = property.items?.allObjects as? [MoveItem] {
+                                                        if let itemToDelete = allItems.first(where: {$0.id == itemID }) {
+                                                            itemsToDelete.append(itemToDelete)
+                                                        }
+                                                    }
+                                                } label: {
+                                                    Label("Delete", systemImage: "trash.fill")
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Share
+                        if roomItemMap.count > 0 {
+                            if let share = share {
+                                if share.participants.count > 1 {
+                                    Section("Roommates") {
+                                        ForEach(share.participants, id: \.self) { participant in
+                                            if participant.acceptanceStatus == .accepted {
+                                                if let user = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
+                                                    HStack() {
+                                                        Text(user)
+                                                            .font(.headline)
+                                                        Spacer()
+                                                        if user == getCurrUser() {
+                                                            Text("(me)")
+                                                        }
                                                     }
                                                 }
                                             }
@@ -69,30 +95,31 @@ struct PropertyView: View {
                             }
                         }
                     }
-                    
-                    if roomItemMap.count < 1 {
-                        VStack {
-                            Spacer()
-                            Text("You don't have any items\nin your property yet!")
-                                .foregroundStyle(.black.opacity(0.6))
-                                .padding(.vertical, 10)
-                                .multilineTextAlignment(.center)
-                            Button(action: {
-                                showAddItemSheet.toggle()
-                            }) {
-                                Text("Add Item")
-                            }
-                            .padding(.horizontal, 30)
-                            .padding(.vertical, 15)
-                            .foregroundColor(.white)
-                            .background(.blue)
-                            .cornerRadius(30)
-                            .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
-                            Spacer()
-                            Spacer()
+                }
+                
+                if roomItemMap.count < 1 {
+                    VStack {
+                        Spacer()
+                        Text("You don't have any items\nin your property yet!")
+                            .foregroundStyle(.black.opacity(0.6))
+                            .padding(.vertical, 10)
+                            .multilineTextAlignment(.center)
+                        Button(action: {
+                            showAddItemSheet.toggle()
+                        }) {
+                            Text("Add Item")
                         }
+                        .padding(.horizontal, 30)
+                        .padding(.vertical, 15)
+                        .foregroundColor(.white)
+                        .background(.blue)
+                        .cornerRadius(30)
+                        .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
+                        Spacer()
+                        Spacer()
                     }
                 }
+                
             }
         }
         .navigationTitle(property.name ?? "Property")
@@ -105,11 +132,11 @@ struct PropertyView: View {
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
-              Button {
-                  showShareSheet = true
-              } label: {
-                Image(systemName: "square.and.arrow.up")
-              }
+                Button {
+                    showShareSheet = true
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -127,11 +154,11 @@ struct PropertyView: View {
         }
         .sheet(isPresented: $showShareSheet) {
             if let share = share {
-              CloudSharingView(
-                share: share,
-                container: stack.ckContainer,
-                property: property
-              )
+                CloudSharingView(
+                    share: share,
+                    container: stack.ckContainer,
+                    property: property
+                )
             }
         }
         .sheet(isPresented: $showEditPropertySheet, onDismiss: {
@@ -154,36 +181,6 @@ struct PropertyView: View {
         .onDisappear() {
             if !(itemsToDelete.isEmpty) {
                 deleteItems()
-            }
-        }
-    }
-    
-    var roomAndItemView: some View {
-        return List {
-            // Rooms and Items
-            ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
-                if let roomName = room.name, items.count > 0, let _ = items[0].name {
-                    Section(roomName) {
-                        ForEach(items, id: \.self.id) { item in
-                            if let itemName = item.name, let itemID = item.id {
-                                NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
-                                    Text(itemName)
-                                }
-                                .swipeActions {
-                                    Button(role: .destructive) {
-                                        if let allItems = property.items?.allObjects as? [MoveItem] {
-                                            if let itemToDelete = allItems.first(where: {$0.id == itemID }) {
-                                                itemsToDelete.append(itemToDelete)
-                                            }
-                                        }
-                                    } label: {
-                                        Label("Delete", systemImage: "trash.fill")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -231,7 +228,6 @@ extension PropertyView {
             try await stack.persistentContainer.share([property], to: nil)
             share[CKShare.SystemFieldKey.title] = property.name
             self.share = share
-            property.isShared = true
         } catch {
             print("Failed to create share")
         }
@@ -252,6 +248,9 @@ extension PropertyView {
             if let participantName = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
                 users.append(participantName)
             }
+        }
+        if users.count > 1 {
+            property.isShared = true
         }
         return users
     }
