@@ -15,6 +15,7 @@ struct PropertyView: View {
     // Room properties
     @ObservedObject var property: Property
     @State private var roomItemMap = [Room: [MoveItem]]()
+    @State private var itemsToDelete = [MoveItem]()
     
     // Show sheets
     @State private var showAddItemSheet = false
@@ -42,37 +43,23 @@ struct PropertyView: View {
                         }
                     }
                     .padding(.top, 40)
-                    List {
-                        // Rooms and Items
-                        ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
-                        if let roomName = room.name, items.count > 0, let _ = items[0].name {
-                            Section(roomName) {
-                                ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
-                                    if let itemName = item.name {
-                                        NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
-                                            Text(itemName)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                        
-                        // Share
-                        if roomItemMap.count > 0 {
-                            if let share = share {
-                                if share.participants.count > 1 {
-                                    Section("Roommates") {
-                                        ForEach(share.participants, id: \.self) { participant in
-                                            if participant.acceptanceStatus == .accepted {
-                                                if let user = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
-                                                    HStack() {
-                                                        Text(user)
-                                                            .font(.headline)
-                                                        Spacer()
-                                                        if user == getCurrUser() {
-                                                            Text("(me)")
-                                                        }
+                    
+                    roomAndItemView
+                    
+                    // Share
+                    if roomItemMap.count > 0 {
+                        if let share = share {
+                            if share.participants.count > 1 {
+                                Section("Roommates") {
+                                    ForEach(share.participants, id: \.self) { participant in
+                                        if participant.acceptanceStatus == .accepted {
+                                            if let user = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
+                                                HStack() {
+                                                    Text(user)
+                                                        .font(.headline)
+                                                    Spacer()
+                                                    if user == getCurrUser() {
+                                                        Text("(me)")
                                                     }
                                                 }
                                             }
@@ -82,6 +69,7 @@ struct PropertyView: View {
                             }
                         }
                     }
+                    
                     if roomItemMap.count < 1 {
                         VStack {
                             Spacer()
@@ -163,6 +151,41 @@ struct PropertyView: View {
                 calculateBudget()
             }
         }
+        .onDisappear() {
+            if !(itemsToDelete.isEmpty) {
+                deleteItems()
+            }
+        }
+    }
+    
+    var roomAndItemView: some View {
+        return List {
+            // Rooms and Items
+            ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
+                if let roomName = room.name, items.count > 0, let _ = items[0].name {
+                    Section(roomName) {
+                        ForEach(items, id: \.self.id) { item in
+                            if let itemName = item.name, let itemID = item.id {
+                                NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
+                                    Text(itemName)
+                                }
+                                .swipeActions {
+                                    Button(role: .destructive) {
+                                        if let allItems = property.items?.allObjects as? [MoveItem] {
+                                            if let itemToDelete = allItems.first(where: {$0.id == itemID }) {
+                                                itemsToDelete.append(itemToDelete)
+                                            }
+                                        }
+                                    } label: {
+                                        Label("Delete", systemImage: "trash.fill")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -175,8 +198,13 @@ extension PropertyView {
         }
     }
     
+    private func deleteItems() {
+        for item in itemsToDelete {
+            stack.deleteMoveItem(item)
+        }
+    }
+    
     private func generateRoomAndItemMapping() {
-        print("Updating map")
         roomItemMap = [:]
         if let items = property.items?.allObjects as? [MoveItem] {
             for item in items {
@@ -187,6 +215,12 @@ extension PropertyView {
                         roomItemMap[room]?.append(item)
                     }
                 }
+            }
+        }
+        for (room, items) in roomItemMap {
+            roomItemMap[room] = items.sorted { $0.dateCreated! > $1.dateCreated! }
+            for item in items {
+                print(item)
             }
         }
     }

@@ -183,18 +183,23 @@ extension AddMoveItemView {
         withAnimation {
             if selectedMoveItem == nil {
                 selectedMoveItem = MoveItem(context: viewContext)
+                if let selectedMoveItem = selectedMoveItem {
+                    selectedMoveItem.id = UUID()
+                }
             }
             
-            selectedMoveItem?.name = name
-            selectedMoveItem?.notes = notes
-            let imageData = inputImage?.jpegData(compressionQuality: 0.8)
-            selectedMoveItem?.image = imageData
-            selectedMoveItem?.price = Float(price ?? 0)
-            selectedMoveItem?.room = room
-            selectedMoveItem?.dateCreated = Date()
-            selectedMoveItem?.owner = owner
+            guard let selectedMoveItem else { return }
             
-            property.addToItems(selectedMoveItem!)
+            selectedMoveItem.name = name
+            selectedMoveItem.notes = notes
+            let imageData = inputImage?.jpegData(compressionQuality: 0.8)
+            selectedMoveItem.image = imageData
+            selectedMoveItem.price = Float(price ?? 0)
+            selectedMoveItem.room = room
+            selectedMoveItem.dateCreated = Date()
+            selectedMoveItem.owner = owner
+            
+            property.addToItems(selectedMoveItem)
             
             stack.save()
         }
