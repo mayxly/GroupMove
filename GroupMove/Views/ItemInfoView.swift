@@ -23,12 +23,13 @@ struct ItemInfoView: View {
                         if let imageData = item.image, let image = UIImage(data: imageData) {
                           Image(uiImage: image)
                                 .resizable()
-                                .scaledToFit()
-                                .frame(height: 400)
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: UIScreen.main.bounds.width)
                         } else {
                             Image("boxItem")
                                 .resizable()
-                                .frame(height: 400)
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: UIScreen.main.bounds.width)
                         }
                     }
                 }
@@ -37,7 +38,7 @@ struct ItemInfoView: View {
                 Color(UIColor.systemBackground)
                     .cornerRadius(30)
                     .frame(height: 100)
-                    .offset(y: -30)
+                    .offset(y: -40)
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading) {
                         HStack {
@@ -77,6 +78,7 @@ struct ItemInfoView: View {
                 }
             }
         }
+        .edgesIgnoringSafeArea(.top)
         .sheet(isPresented: $showEditItemView) {
             if let owner = item.owner {
                 AddMoveItemView(passedMoveItem: item, passedProperty: property, currUser: owner, userList: userList)
