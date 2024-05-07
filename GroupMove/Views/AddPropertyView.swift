@@ -13,6 +13,7 @@ struct AddPropertyView: View {
     
     @State private var selectedProperty: Property?
     @State private var name: String
+    @State private var hasEditedName: Bool = false
     @State private var hasBudget: Bool
     private var budgetAmount: Float? {
         try? FloatingPointFormatStyle.number.parseStrategy.parse(budgetAmountText)
@@ -52,6 +53,7 @@ struct AddPropertyView: View {
             _selectedProperty = State(initialValue: property)
             _name = State(initialValue: property.name ?? "")
             _hasBudget = State(initialValue: property.hasBudget)
+            
             // Budget
             let formatter = NumberFormatter()
             formatter.minimumFractionDigits = 2
@@ -103,11 +105,29 @@ struct AddPropertyView: View {
                                 } message: {
                                     Text("Please enter a property name.")
                                 }
+                                .onChange(of: name) { _ in
+                                    hasEditedName = true
+                                }
+                                .disabled(priceKeyboardIsFocused)
+                                .onTapGesture {
+                                    priceKeyboardIsFocused = false
+                                }
                         }
-                    }.listRowSeparator(.hidden)
+                    } footer: {
+                        if hasEditedName {
+                            Text("Property name is required")
+                                .font(.caption)
+                                .foregroundColor(name.isEmpty ? .red : .clear)
+                        }
+                    }
+                    .listRowSeparator(.hidden)
+                    
                     Section(header: Text("Budget"),
                             footer: Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")) {
                         Toggle("Add Budget", isOn: $hasBudget)
+                            .onChange(of: hasBudget) { newValue in
+                                budgetAmountText = ""
+                            }
                         if hasBudget {
                             PriceTextField(priceAmountText: $budgetAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
                         }
@@ -153,6 +173,7 @@ struct AddPropertyView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
+                        hasEditedName = true
                         if !isValidPropertyName(for: name) {
                             showingNameError.toggle()
                         } else {
@@ -168,12 +189,14 @@ struct AddPropertyView: View {
                 }
             }
         }
+        .interactiveDismissDisabled()
     }
     
     private func saveProperty() {
         withAnimation {
             if selectedProperty == nil {
                 selectedProperty = Property(context: viewContext)
+                selectedProperty?.isShared = false
             }
             
             guard let selectedProperty else { return }

@@ -9,18 +9,27 @@ import SwiftUI
 
 struct ItemInfoView: View {
     
-    var item: MoveItem
-    var propertyHasBudget: Bool
+    @ObservedObject var item: MoveItem
+    @ObservedObject var property: Property
+    var userList: [String]
+    
+    @State private var showEditItemView = false
     
     var body: some View {
         ScrollView {
             ZStack {
                 VStack(alignment: .leading) {
                     ZStack(alignment: .topTrailing) {
-                        Image("boxItem")
-                            .resizable()
-                            .ignoresSafeArea(edges: .top)
-                            .frame(height: 400)
+                        if let imageData = item.image, let image = UIImage(data: imageData) {
+                          Image(uiImage: image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 400)
+                        } else {
+                            Image("boxItem")
+                                .resizable()
+                                .frame(height: 400)
+                        }
                     }
                 }
             }
@@ -36,7 +45,7 @@ struct ItemInfoView: View {
                                 .font(.title)
                                 .bold()
                             Spacer()
-                            if propertyHasBudget {
+                            if property.hasBudget {
                                 if item.price == 0 {
                                     Text("Free")
                                 } else {
@@ -50,28 +59,44 @@ struct ItemInfoView: View {
                             .padding(.horizontal, 20)
                             .padding(.vertical, 4)
                             .foregroundColor(.white)
-                            .background(.black.opacity(0.3))
+                            .background(.gray.opacity(0.5))
                             .cornerRadius(8)
                     }
                     .padding(.horizontal)
                     .padding(.top, 8)
                     
-                    VStack(alignment: .leading) {
-                        Text("Notes")
-                            .font(.title3)
-                            .fontWeight(.medium)
-                        Text("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s")
+                    if let itemNotes = item.notes {
+                        VStack(alignment: .leading) {
+                            Text("Notes")
+                                .font(.title3)
+                                .fontWeight(.medium)
+                            Text(itemNotes)
+                        }
+                        .padding()
                     }
-                    .padding()
                 }
             }
         }
-        .ignoresSafeArea(edges: .top)
+        .sheet(isPresented: $showEditItemView) {
+            if let owner = item.owner {
+                AddMoveItemView(passedMoveItem: item, passedProperty: property, currUser: owner, userList: userList)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showEditItemView.toggle()
+                } label: {
+                    Text("Edit")
+                        .foregroundStyle(.blue)
+                }
+            }
+        }
     }
 }
 
 #Preview {
     var viewContext = CoreDataStack.shared.context
-    let item = PreviewManager.shared.getMoveItem(context: viewContext)
-    return ItemInfoView(item: item, propertyHasBudget: true)
+    let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: viewContext)
+    return ItemInfoView(item: property.items?.anyObject() as! MoveItem, property: property, userList: ["John Doe"])
 }

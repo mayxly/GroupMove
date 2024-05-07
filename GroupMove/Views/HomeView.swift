@@ -28,21 +28,33 @@ struct HomeView: View {
                             Section() {
                                 ForEach(homes, id: \.self) { home in
                                     NavigationLink(destination: PropertyView(property: home)) {
-                                        ZStack {
-                                            Circle()
-                                                .frame(width: 32)
-                                                .padding(.vertical, 4)
-                                                .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
-                                            Image(systemName: "house.fill")
-                                                .resizable()
-                                                .frame(width: 16, height: 16)
-                                                .padding(.vertical, 4)
-                                                .foregroundColor(.white)
+                                        HStack {
+                                            ZStack {
+                                                Circle()
+                                                    .frame(width: 32)
+                                                    .padding(.vertical, 4)
+                                                    .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
+                                                Image(systemName: "house.fill")
+                                                    .resizable()
+                                                    .frame(width: 16, height: 16)
+                                                    .padding(.vertical, 4)
+                                                    .foregroundColor(.white)
+                                            }
+                                            Text(home.name ?? "Property")
+                                                .bold()
+                                                .padding(.horizontal, 8)
+                                            if home.isShared {
+                                                Spacer()
+                                                Image(systemName: "person.2.fill")
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fit)
+                                                    .frame(width: 20)
+                                                    .foregroundColor(.gray.opacity(0.5))
+                                                    .padding(.trailing, 12)
+                                            }
                                         }
-                                        Text(home.name ?? "Property")
-                                            .bold()
-                                            .padding(.horizontal, 8)
                                     }
+                                    .deleteDisabled(!stack.canDelete(object: home))
                                 }
                                 .onDelete(perform: delete)
                             } header: {
@@ -60,6 +72,7 @@ struct HomeView: View {
                                 .listRowInsets(.init(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)))
                             }
                         }
+                        .listRowSpacing(10)
                         if homes.count < 1 {
                             VStack {
                                 Spacer()
@@ -96,7 +109,9 @@ struct HomeView: View {
             }
         }
     }
-    
+}
+
+extension HomeView {
     private func delete(at offsets: IndexSet) {
         for index in offsets {
             let property = homes[index]
