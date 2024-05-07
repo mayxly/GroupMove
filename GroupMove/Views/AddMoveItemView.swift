@@ -36,6 +36,7 @@ struct AddMoveItemView: View {
     
     // Keyboard
     @FocusState var priceKeyboardIsFocused: Bool
+    @FocusState var notesKeyboardIsFocused: Bool
     
     // UI
     private var stack = CoreDataStack.shared
@@ -102,21 +103,50 @@ struct AddMoveItemView: View {
                 Section ("Notes") {
                     TextEditor(text: $notes)
                         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity)
-                    
+                        .focused($notesKeyboardIsFocused)
+                        .onTapGesture {
+                            priceKeyboardIsFocused = false
+                        }
+                        .toolbar {
+                            if notesKeyboardIsFocused {
+                                ToolbarItemGroup(placement: .keyboard) {
+                                    Spacer()
+                                    Button("Done") {
+                                        notesKeyboardIsFocused.toggle()
+                                    }
+                                }
+                            }
+                        }
                 }
                 Section {
-                    if image == nil {
-                        Button {
-                            self.showingImagePicker = true
-                        } label: {
+                    Button {
+                        self.showingImagePicker = true
+                    } label: {
+                        if image == nil {
                             Text("Add a photo")
-                        }
-                    } else {
-                        Button {
-                            self.showingImagePicker = true
-                        } label: {image?
-                                .resizable()
-                                .scaledToFit()
+                        } else {
+                            ZStack {
+                                image?
+                                    .resizable()
+                                    .scaledToFit()
+                                if image != nil {
+                                    VStack {
+                                        HStack {
+                                            Spacer()
+                                            Button(action: {
+                                                self.image = nil
+                                                self.inputImage = nil
+                                            }) {
+                                                Image(systemName: "xmark")
+                                                    .foregroundColor(.white)
+                                                    .font(.title)
+                                                    .padding()
+                                            }
+                                        }
+                                        Spacer()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
