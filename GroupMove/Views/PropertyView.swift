@@ -82,6 +82,7 @@ struct PropertyView: View {
                 } label: {
                     Text("Edit")
                 }
+                .disabled(!stack.canEdit(object: property))
             }
         }
         .sheet(isPresented: $showAddItemSheet, onDismiss: {
