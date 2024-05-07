@@ -66,6 +66,7 @@ struct PropertyView: View {
                         }
                     }
                 }
+                
             }
             .background(Color(UIColor.secondarySystemBackground))
         }
@@ -261,7 +262,6 @@ extension PropertyView {
             try await stack.persistentContainer.share([property], to: nil)
             share[CKShare.SystemFieldKey.title] = property.name
             self.share = share
-            property.isShared = true
         } catch {
             print("Failed to create share")
         }
@@ -282,6 +282,9 @@ extension PropertyView {
             if let participantName = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
                 users.append(participantName)
             }
+        }
+        if users.count > 1 {
+            property.isShared = true
         }
         return users
     }
