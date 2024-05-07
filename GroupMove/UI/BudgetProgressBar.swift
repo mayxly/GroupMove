@@ -32,6 +32,7 @@ struct BudgetProgressBar: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: height)
                         .stroke(isOverBudget ? .red : .clear, lineWidth: 1)
+                        .blur(radius: 1.5)
                 )
         }
     }

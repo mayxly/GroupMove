@@ -34,45 +34,40 @@ struct PropertyView: View {
     var body: some View {
         VStack {
             VStack {
-                // No items
+                // No Items
                 if roomItemMap.count < 1 {
                     NoItemsView
                 } else {
                     // Budget
                     if property.hasBudget {
+                        HStack {
+                            Text("Budget")
+                                .bold()
+                                .font(.title2)
+                                .foregroundStyle(Color(hex: "00A5E3"))
+                            Spacer()
+                        }
+                        .padding(.horizontal)
                         BudgetView
                     }
+                    // Rooms and Items
+                    HStack {
+                        Text("Items")
+                            .bold()
+                            .font(.title2)
+                            .foregroundStyle(Color(hex: "00A5E3"))
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 20)
                     List {
-                        // Rooms and Items
                         RoomsItemsListView
-                        // Share
-                        if let share = share {
-                            if share.participants.count > 1 {
-                                Section("Roommates") {
-                                    ForEach(share.participants, id: \.self) { participant in
-                                        if participant.acceptanceStatus == .accepted {
-                                            if let user = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
-                                                HStack() {
-                                                    Text(user)
-                                                        .font(.headline)
-                                                    Spacer()
-                                                    if user == getCurrUser() {
-                                                        Text("(me)")
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
                 
             }
-            .background(Color(UIColor.secondarySystemBackground))
         }
-        .background(Color(UIColor.secondarySystemBackground))
+        .background(Color(UIColor.systemGroupedBackground))
         .navigationTitle(property.name ?? "Property")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -136,7 +131,7 @@ struct PropertyView: View {
         VStack {
             Spacer()
             Text("You don't have any items\nin your property yet!")
-                .foregroundStyle(.black.opacity(0.6))
+                .foregroundStyle(Color(UIColor.secondaryLabel))
                 .padding(.vertical, 10)
                 .multilineTextAlignment(.center)
             Button(action: {
@@ -146,7 +141,7 @@ struct PropertyView: View {
             }
             .padding(.horizontal, 30)
             .padding(.vertical, 15)
-            .foregroundColor(.white)
+            .foregroundColor(Color(UIColor.white))
             .background(Color(hex: "00A5E3"))
             .cornerRadius(30)
             .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
@@ -160,18 +155,11 @@ struct PropertyView: View {
         VStack {
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
-                    .frame(height: 86)
+                    .frame(height: 70)
                     .padding(.horizontal)
-                    .foregroundColor(.white)
-                    .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.1), radius: 8)
+                    .foregroundColor(Color(UIColor.tertiarySystemBackground))
+                    .shadow(color: .gray.opacity(0.1), radius: 2)
                 VStack {
-                    HStack {
-                        Text("BUDGET")
-                            .foregroundStyle(.secondary)
-                            .padding(.leading, 12)
-                            .font(.system(size: 14))
-                        Spacer()
-                    }
                     let budgetPercent = CGFloat((usedBudget / property.budget) * 100)
                     let isOverBudget = usedBudget > property.budget
                     BudgetProgressBar(percent: budgetPercent, isOverBudget: isOverBudget)
@@ -184,7 +172,7 @@ struct PropertyView: View {
                     }
                 }.padding(.horizontal, 30)
             }
-            .padding(.vertical)
+            .padding(.bottom)
             Divider()
                 .padding(.horizontal)
         }
@@ -212,6 +200,7 @@ struct PropertyView: View {
                             }
                         }
                     }
+                    .listRowBackground(Color(UIColor.tertiarySystemBackground))
                 }
             }
         }
