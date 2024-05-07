@@ -56,12 +56,14 @@ class PreviewManager {
         microwave.owner = "John Doe"
         microwave.dateCreated = Date()
         microwave.room = kitchen
+        microwave.id = UUID()
         
         let lamp = MoveItem(context: context)
         lamp.name = "Lamp"
         lamp.owner = "John Doe"
         lamp.dateCreated = Date()
         lamp.room = bedroom
+        lamp.id = UUID()
         
         myProperty.addToRooms(kitchen)
         myProperty.addToRooms(bedroom)
@@ -83,6 +85,8 @@ class PreviewManager {
         lamp.price = 0
         lamp.dateCreated = Date()
         lamp.room = bedroom
+        lamp.id = UUID()
+        
         return lamp
     }
     

@@ -14,11 +14,11 @@ struct AddMoveItemView: View {
     // MoveItem Fields
     @State private var selectedMoveItem: MoveItem?
     @State private var name: String
+    @State private var hasEditedName: Bool = false
     @State private var notes: String
     @State private var inputImage: UIImage?
     @State private var image: Image?
     @State private var showingImagePicker = false
-    @State private var hasEditedName: Bool = false
     private let hasBudget: Bool
     private var price: Float? {
         try? FloatingPointFormatStyle.number.parseStrategy.parse(priceAmountText)
@@ -85,7 +85,7 @@ struct AddMoveItemView: View {
                         .onTapGesture {
                             priceKeyboardIsFocused = false
                         }
-                        .onSubmit {
+                        .onChange(of: name) { _ in
                             hasEditedName = true
                         }
                         .alert("Save Error", isPresented: $showingNameError) {
@@ -156,6 +156,7 @@ struct AddMoveItemView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
+                        hasEditedName = true
                         if name == "" {
                             showingNameError.toggle()
                         } else {
@@ -183,18 +184,23 @@ extension AddMoveItemView {
         withAnimation {
             if selectedMoveItem == nil {
                 selectedMoveItem = MoveItem(context: viewContext)
+                if let selectedMoveItem = selectedMoveItem {
+                    selectedMoveItem.id = UUID()
+                }
             }
             
-            selectedMoveItem?.name = name
-            selectedMoveItem?.notes = notes
-            let imageData = inputImage?.jpegData(compressionQuality: 0.8)
-            selectedMoveItem?.image = imageData
-            selectedMoveItem?.price = Float(price ?? 0)
-            selectedMoveItem?.room = room
-            selectedMoveItem?.dateCreated = Date()
-            selectedMoveItem?.owner = owner
+            guard let selectedMoveItem else { return }
             
-            property.addToItems(selectedMoveItem!)
+            selectedMoveItem.name = name
+            selectedMoveItem.notes = notes
+            let imageData = inputImage?.jpegData(compressionQuality: 0.8)
+            selectedMoveItem.image = imageData
+            selectedMoveItem.price = Float(price ?? 0)
+            selectedMoveItem.room = room
+            selectedMoveItem.dateCreated = Date()
+            selectedMoveItem.owner = owner
+            
+            property.addToItems(selectedMoveItem)
             
             stack.save()
         }

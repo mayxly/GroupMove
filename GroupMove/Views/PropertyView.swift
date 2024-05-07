@@ -15,6 +15,7 @@ struct PropertyView: View {
     // Room properties
     @ObservedObject var property: Property
     @State private var roomItemMap = [Room: [MoveItem]]()
+    @State private var itemsToDelete = [MoveItem]()
     
     // Show sheets
     @State private var showAddItemSheet = false
@@ -26,7 +27,9 @@ struct PropertyView: View {
     private let stack = CoreDataStack.shared
     
     // Calculate budget
-    @State private var usedBudget: Float = 0.0
+    private var usedBudget: Float {
+        return calculateUsedBudget()
+    }
     
     var body: some View {
         VStack {
@@ -65,6 +68,7 @@ struct PropertyView: View {
                         }
                     }
                 }
+                
             }
             .background(Color(UIColor.secondarySystemBackground))
         }
@@ -120,8 +124,10 @@ struct PropertyView: View {
                     await createShare(property)
                 }
             }
-            if property.hasBudget {
-                calculateBudget()
+        }
+        .onDisappear() {
+            if !(itemsToDelete.isEmpty) {
+                deleteItems()
             }
         }
     }
@@ -188,10 +194,21 @@ struct PropertyView: View {
         ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
             if let roomName = room.name, items.count > 0, let _ = items[0].name {
                 Section(roomName) {
-                    ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
-                        if let itemName = item.name {
+                    ForEach(items, id: \.self.id) { item in
+                        if let itemName = item.name, let itemID = item.id {
                             NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
                                 Text(itemName)
+                            }
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    if let allItems = property.items?.allObjects as? [MoveItem] {
+                                        if let itemToDelete = allItems.first(where: {$0.id == itemID }) {
+                                            itemsToDelete.append(itemToDelete)
+                                        }
+                                    }
+                                } label: {
+                                    Label("Delete", systemImage: "trash.fill")
+                                }
                             }
                         }
                     }
@@ -202,17 +219,29 @@ struct PropertyView: View {
 }
 
 extension PropertyView {
-    private func calculateBudget() {
-        usedBudget = 0
-        if let items = property.items?.allObjects as? [MoveItem] {
-            for item in items {
-                usedBudget += item.price
+    private func calculateUsedBudget() -> Float {
+        if property.hasBudget {
+            var spent: Float = 0
+            if let items = property.items?.allObjects as? [MoveItem] {
+                for item in items {
+                    spent += item.price
+                }
             }
+            for deletedItem in itemsToDelete {
+                spent -= deletedItem.price
+            }
+            return spent
+        }
+        return 0
+    }
+    
+    private func deleteItems() {
+        for item in itemsToDelete {
+            stack.deleteMoveItem(item)
         }
     }
     
     private func generateRoomAndItemMapping() {
-        print("Updating map")
         roomItemMap = [:]
         if let items = property.items?.allObjects as? [MoveItem] {
             for item in items {
@@ -225,6 +254,12 @@ extension PropertyView {
                 }
             }
         }
+        for (room, items) in roomItemMap {
+            roomItemMap[room] = items.sorted { $0.dateCreated! > $1.dateCreated! }
+            for item in items {
+                print(item)
+            }
+        }
     }
     
     private func createShare(_ property: Property) async {
@@ -233,7 +268,6 @@ extension PropertyView {
             try await stack.persistentContainer.share([property], to: nil)
             share[CKShare.SystemFieldKey.title] = property.name
             self.share = share
-            property.isShared = true
         } catch {
             print("Failed to create share")
         }
@@ -254,6 +288,9 @@ extension PropertyView {
             if let participantName = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
                 users.append(participantName)
             }
+        }
+        if users.count > 1 {
+            property.isShared = true
         }
         return users
     }
@@ -315,4 +352,3 @@ struct PropertyView_Previews: PreviewProvider {
         return PropertyView(property: property)
     }
 }
-
