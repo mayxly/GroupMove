@@ -40,14 +40,6 @@ struct PropertyView: View {
                 } else {
                     // Budget
                     if property.hasBudget {
-                        HStack {
-                            Text("Budget")
-                                .bold()
-                                .font(.title2)
-                                .foregroundStyle(Color(hex: "00A5E3"))
-                            Spacer()
-                        }
-                        .padding(.horizontal)
                         BudgetView
                     }
                     // Rooms and Items
@@ -155,13 +147,20 @@ struct PropertyView: View {
         VStack {
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
-                    .frame(height: 70)
+                    .frame(height: 84)
                     .padding(.horizontal)
                     .foregroundColor(Color(UIColor.tertiarySystemBackground))
                     .shadow(color: .gray.opacity(0.1), radius: 2)
                 VStack {
                     let budgetPercent = CGFloat((usedBudget / property.budget) * 100)
                     let isOverBudget = usedBudget > property.budget
+                    HStack {
+                        Text("BUDGET")
+                            .padding(.leading, 12)
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color(UIColor.secondaryLabel))
+                        Spacer()
+                    }
                     BudgetProgressBar(percent: budgetPercent, isOverBudget: isOverBudget)
                     HStack {
                         Spacer()
