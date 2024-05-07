@@ -15,6 +15,8 @@ struct ItemInfoView: View {
     
     @State private var showEditItemView = false
     
+    private let stack = CoreDataStack.shared
+    
     var body: some View {
         ScrollView {
             ZStack {
@@ -90,6 +92,7 @@ struct ItemInfoView: View {
                     Text("Edit")
                         .foregroundStyle(.blue)
                 }
+                .disabled(!stack.canEdit(object: property))
             }
         }
     }

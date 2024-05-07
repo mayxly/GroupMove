@@ -188,4 +188,9 @@ extension CoreDataStack {
             self.save()
         }
     }
+    
+    func stopSharing(_ property: Property) {
+        property.isShared = false
+        self.save()
+    }
 }
