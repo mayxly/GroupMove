@@ -36,9 +36,9 @@ struct ItemInfoView: View {
             }
             ZStack(alignment: .top) {
                 Color(UIColor.systemBackground)
-                    .cornerRadius(30)
+                    .cornerRadius(20)
                     .frame(height: 100)
-                    .offset(y: -40)
+                    .offset(y: -35)
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading) {
                         HStack {
@@ -64,7 +64,6 @@ struct ItemInfoView: View {
                             .cornerRadius(8)
                     }
                     .padding(.horizontal)
-                    .padding(.top, 8)
                     
                     if let itemNotes = item.notes {
                         VStack(alignment: .leading) {
@@ -84,15 +83,34 @@ struct ItemInfoView: View {
                 AddMoveItemView(passedMoveItem: item, passedProperty: property, currUser: owner, userList: userList)
             }
         }
+        
+        .navigationBarBackButtonHidden(true)
+        .navigationBarItems(leading: backButton)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showEditItemView.toggle()
                 } label: {
-                    Text("Edit")
-                        .foregroundStyle(.blue)
+                    Image(systemName: "pencil.circle")
+                        .foregroundStyle(.white)
+                        .shadow(color: .black.opacity(0.8), radius: 4)
                 }
             }
+        }
+    }
+    
+    // Custom back button
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    var backButton : some View { Button(action: {
+        self.presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "chevron.left")
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.8), radius: 4)
+            Text("Back")
+                .foregroundStyle(.white)
+                .bold()
+                .shadow(color: .black.opacity(0.8), radius: 4)
         }
     }
 }

@@ -105,16 +105,13 @@ struct AddMoveItemView: View {
                     
                 }
                 Section {
-                    if image == nil {
-                        Button {
-                            self.showingImagePicker = true
-                        } label: {
+                    Button {
+                        self.showingImagePicker = true
+                    } label: {
+                        if image == nil {
                             Text("Add a photo")
-                        }
-                    } else {
-                        Button {
-                            self.showingImagePicker = true
-                        } label: {image?
+                        } else {
+                            image?
                                 .resizable()
                                 .scaledToFit()
                         }
