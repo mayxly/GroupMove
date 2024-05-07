@@ -69,6 +69,7 @@ struct HomeView: View {
                                 .listRowInsets(.init(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)))
                             }
                         }
+                        .listRowSpacing(10)
                         if homes.count < 1 {
                             VStack {
                                 Spacer()

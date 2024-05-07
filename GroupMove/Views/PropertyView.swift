@@ -30,49 +30,31 @@ struct PropertyView: View {
     
     var body: some View {
         VStack {
-            ZStack {
-                // Budget
-                VStack {
-                    VStack {
-                        if property.hasBudget {
-                            Text("Budget")
-                            let budgetPercent = CGFloat((usedBudget / property.budget) * 100)
-                            BudgetProgressBar(percent: budgetPercent)
-                            Text("\(usedBudget) / \(property.budget)")
-                        }
+            VStack {
+                // No items
+                if roomItemMap.count < 1 {
+                    NoItemsView
+                } else {
+                    // Budget
+                    if property.hasBudget {
+                        BudgetView
                     }
-                    .padding(.top, 40)
                     List {
                         // Rooms and Items
-                        ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
-                        if let roomName = room.name, items.count > 0, let _ = items[0].name {
-                            Section(roomName) {
-                                ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
-                                    if let itemName = item.name {
-                                        NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
-                                            Text(itemName)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                        
+                        RoomsItemsListView
                         // Share
-                        if roomItemMap.count > 0 {
-                            if let share = share {
-                                if share.participants.count > 1 {
-                                    Section("Roommates") {
-                                        ForEach(share.participants, id: \.self) { participant in
-                                            if participant.acceptanceStatus == .accepted {
-                                                if let user = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
-                                                    HStack() {
-                                                        Text(user)
-                                                            .font(.headline)
-                                                        Spacer()
-                                                        if user == getCurrUser() {
-                                                            Text("(me)")
-                                                        }
+                        if let share = share {
+                            if share.participants.count > 1 {
+                                Section("Roommates") {
+                                    ForEach(share.participants, id: \.self) { participant in
+                                        if participant.acceptanceStatus == .accepted {
+                                            if let user = participant.userIdentity.nameComponents?.formatted(.name(style: .long)) {
+                                                HStack() {
+                                                    Text(user)
+                                                        .font(.headline)
+                                                    Spacer()
+                                                    if user == getCurrUser() {
+                                                        Text("(me)")
                                                     }
                                                 }
                                             }
@@ -82,53 +64,32 @@ struct PropertyView: View {
                             }
                         }
                     }
-                    if roomItemMap.count < 1 {
-                        VStack {
-                            Spacer()
-                            Text("You don't have any items\nin your property yet!")
-                                .foregroundStyle(.black.opacity(0.6))
-                                .padding(.vertical, 10)
-                                .multilineTextAlignment(.center)
-                            Button(action: {
-                                showAddItemSheet.toggle()
-                            }) {
-                                Text("Add Item")
-                            }
-                            .padding(.horizontal, 30)
-                            .padding(.vertical, 15)
-                            .foregroundColor(.white)
-                            .background(.blue)
-                            .cornerRadius(30)
-                            .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
-                            Spacer()
-                            Spacer()
-                        }
-                    }
                 }
             }
+            .background(Color(UIColor.secondarySystemBackground))
         }
+        .background(Color(UIColor.secondarySystemBackground))
         .navigationTitle(property.name ?? "Property")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showAddItemSheet.toggle()
                 } label: {
-                    Image(systemName: "plus")
+                    Image(systemName: "plus.circle")
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
-              Button {
-                  showShareSheet = true
-              } label: {
-                Image(systemName: "square.and.arrow.up")
-              }
+                Button {
+                    showShareSheet = true
+                } label: {
+                    Image(systemName: "person.badge.plus")
+                }
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showEditPropertySheet.toggle()
                 } label: {
                     Text("Edit")
-                        .foregroundStyle(.blue)
                 }
             }
         }
@@ -139,11 +100,11 @@ struct PropertyView: View {
         }
         .sheet(isPresented: $showShareSheet) {
             if let share = share {
-              CloudSharingView(
-                share: share,
-                container: stack.ckContainer,
-                property: property
-              )
+                CloudSharingView(
+                    share: share,
+                    container: stack.ckContainer,
+                    property: property
+                )
             }
         }
         .sheet(isPresented: $showEditPropertySheet, onDismiss: {
@@ -164,10 +125,85 @@ struct PropertyView: View {
             }
         }
     }
+    
+    var NoItemsView: some View {
+        VStack {
+            Spacer()
+            Text("You don't have any items\nin your property yet!")
+                .foregroundStyle(.black.opacity(0.6))
+                .padding(.vertical, 10)
+                .multilineTextAlignment(.center)
+            Button(action: {
+                showAddItemSheet.toggle()
+            }) {
+                Text("Add Item")
+            }
+            .padding(.horizontal, 30)
+            .padding(.vertical, 15)
+            .foregroundColor(.white)
+            .background(Color(hex: "00A5E3"))
+            .cornerRadius(30)
+            .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
+            Spacer()
+            Spacer()
+        }
+        .background(Color(UIColor.systemBackground))
+    }
+    
+    var BudgetView: some View {
+        VStack {
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .frame(height: 86)
+                    .padding(.horizontal)
+                    .foregroundColor(.white)
+                    .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.1), radius: 8)
+                VStack {
+                    HStack {
+                        Text("BUDGET")
+                            .foregroundStyle(.secondary)
+                            .padding(.leading, 12)
+                            .font(.system(size: 14))
+                        Spacer()
+                    }
+                    let budgetPercent = CGFloat((usedBudget / property.budget) * 100)
+                    let isOverBudget = usedBudget > property.budget
+                    BudgetProgressBar(percent: budgetPercent, isOverBudget: isOverBudget)
+                    HStack {
+                        Spacer()
+                        Text("$\(String(format: "%.2f", usedBudget)) / $\(String(format: "%.2f", property.budget))")
+                            .foregroundStyle(isOverBudget ? .red : Color(hex: "00A5E3"))
+                            .font(.system(size: 12))
+                            .padding(.trailing, 12)
+                    }
+                }.padding(.horizontal, 30)
+            }
+            .padding(.vertical)
+            Divider()
+                .padding(.horizontal)
+        }
+    }
+    
+    var RoomsItemsListView: some View {
+        ForEach(roomItemMap.sorted(by: { $0.key.orderIndex < $1.key.orderIndex }), id: \.key.orderIndex) { room, items in
+            if let roomName = room.name, items.count > 0, let _ = items[0].name {
+                Section(roomName) {
+                    ForEach(items.sorted(by: { $0.dateCreated! > $1.dateCreated! }), id: \.self) { item in
+                        if let itemName = item.name {
+                            NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
+                                Text(itemName)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension PropertyView {
     private func calculateBudget() {
+        usedBudget = 0
         if let items = property.items?.allObjects as? [MoveItem] {
             for item in items {
                 usedBudget += item.price

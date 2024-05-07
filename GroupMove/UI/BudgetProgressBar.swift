@@ -8,25 +8,31 @@
 import SwiftUI
 
 struct BudgetProgressBar: View {
-    var width: CGFloat = 200
+    var width: CGFloat = UIScreen.main.bounds.width - 80
     var height: CGFloat = 20
     var percent: CGFloat = 70
-    var color1 = Color(hex: "8360c3")
-    var color2 = Color(hex: "2ebf91")
+    var color1 = Color(hex: "4DD091")
+    var color2 = Color(hex: "00A5E3")
+    var isOverBudget: Bool = false
     
     var body: some View {
         let multiplier = width / 100
+        let progressWidth = min(width, percent * multiplier)
         
         ZStack(alignment: .leading) {
             RoundedRectangle(cornerRadius: height, style: .continuous)
                 .frame(width: width, height: height)
-                .foregroundColor(Color.black.opacity(0.1))
+                .foregroundColor(Color.gray.opacity(0.2))
             
             RoundedRectangle(cornerRadius: height, style: .continuous)
-                .frame(width: percent * multiplier, height: height)
+                .frame(width: progressWidth, height: height)
                 .background(LinearGradient(gradient: Gradient(colors: [color1, color2]), startPoint: .leading, endPoint: /*@START_MENU_TOKEN@*/.trailing/*@END_MENU_TOKEN@*/)
                     .clipShape(RoundedRectangle(cornerRadius: height, style: .continuous)))
                 .foregroundStyle(.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: height)
+                        .stroke(isOverBudget ? .red : .clear, lineWidth: 1)
+                )
         }
     }
 }
