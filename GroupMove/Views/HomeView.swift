@@ -77,7 +77,7 @@ struct HomeView: View {
                             VStack {
                                 Spacer()
                                 Text("You don't have any properties yet!")
-                                    .foregroundStyle(.black.opacity(0.6))
+                                    .foregroundStyle(Color(UIColor.secondaryLabel))
                                     .padding(.vertical, 10)
                                     .multilineTextAlignment(.center)
                                 Button(action: {
@@ -88,7 +88,7 @@ struct HomeView: View {
                                 .padding(.horizontal, 30)
                                 .padding(.vertical, 15)
                                 .foregroundColor(.white)
-                                .background(.blue)
+                                .background(Color(hex: "00A5E3"))
                                 .cornerRadius(30)
                                 .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
                                 Spacer()
