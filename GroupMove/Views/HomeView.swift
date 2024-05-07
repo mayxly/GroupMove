@@ -108,7 +108,9 @@ struct HomeView: View {
             }
         }
     }
-    
+}
+
+extension HomeView {
     private func delete(at offsets: IndexSet) {
         for index in offsets {
             let property = homes[index]
