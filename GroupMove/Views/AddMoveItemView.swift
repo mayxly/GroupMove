@@ -36,6 +36,7 @@ struct AddMoveItemView: View {
     
     // Keyboard
     @FocusState var priceKeyboardIsFocused: Bool
+    @FocusState var notesKeyboardIsFocused: Bool
     
     // UI
     private var stack = CoreDataStack.shared
@@ -102,7 +103,20 @@ struct AddMoveItemView: View {
                 Section ("Notes") {
                     TextEditor(text: $notes)
                         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity)
-                    
+                        .focused($notesKeyboardIsFocused)
+                        .onTapGesture {
+                            priceKeyboardIsFocused = false
+                        }
+                        .toolbar {
+                            if notesKeyboardIsFocused {
+                                ToolbarItemGroup(placement: .keyboard) {
+                                    Spacer()
+                                    Button("Done") {
+                                        notesKeyboardIsFocused.toggle()
+                                    }
+                                }
+                            }
+                        }
                 }
                 Section {
                     Button {
