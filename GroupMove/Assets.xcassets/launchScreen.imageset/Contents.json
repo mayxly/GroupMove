@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "boxItem 1.png",
+      "filename" : "GroupMove Launch Screen.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "boxItem 2.png",
+      "filename" : "GroupMove Launch Screen 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "boxItem.png",
+      "filename" : "GroupMove Launch Screen 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
