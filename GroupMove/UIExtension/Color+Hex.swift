@@ -10,7 +10,6 @@ import SwiftUI
 extension Color {
     init(hex: String) {
         let scanner = Scanner(string: hex)
-        _ = scanner.scanString("#", into: nil)
         
         var rgb: UInt64 = 0
         scanner.scanHexInt64(&rgb)
