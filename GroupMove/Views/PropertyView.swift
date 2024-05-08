@@ -10,8 +10,6 @@ import CoreData
 import CloudKit
 
 struct PropertyView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-    
     // Room properties
     @ObservedObject var property: Property
     @State private var roomItemMap = [Room: [MoveItem]]()
@@ -332,7 +330,7 @@ extension PropertyView {
 }
 
 struct PropertyView_Previews: PreviewProvider {
-    static var viewContext = CoreDataStack.shared.context
+    static let viewContext = CoreDataStack.shared.context
     
     static var previews: some View {
         let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: viewContext)
