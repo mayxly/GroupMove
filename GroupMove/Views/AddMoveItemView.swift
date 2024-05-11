@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddMoveItemView: View {
     @Environment(\.dismiss) var done
-    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.managedObjectContext) var viewContext
     
     // MoveItem Fields
     @State private var selectedMoveItem: MoveItem?
@@ -42,8 +42,9 @@ struct AddMoveItemView: View {
     private var stack = CoreDataStack.shared
     
     
-    init(passedMoveItem: MoveItem?, passedProperty: Property, currUser: String, userList: [String]) {
+    init(passedMoveItem: MoveItem?, passedProperty: Property, participants: ParticipantInfoViewModel) {
         property = passedProperty
+        userList = participants.allParticipants
         if let allRooms = property.rooms?.allObjects as? [Room] {
             rooms = allRooms.sorted(by: { $0.orderIndex < $1.orderIndex })
         } else {
@@ -70,11 +71,9 @@ struct AddMoveItemView: View {
             _name = State(initialValue: "")
             _notes = State(initialValue: "")
             _priceAmountText = State(initialValue: "")
-            _room = State(initialValue: rooms[0])
-            _owner = State(initialValue: currUser)
+            _room = State(initialValue: rooms.first!)
+            _owner = State(initialValue: participants.currUser)
         }
-        
-        self.userList = userList
     }
     
     var body: some View {
@@ -239,9 +238,13 @@ extension AddMoveItemView {
 }
 
 #Preview {
-    var viewContext = CoreDataStack.shared.context
+    let viewContext = CoreDataStack.shared.context
     
     let property = PreviewManager.shared.getBasicPropertyWithRooms(context: viewContext)
     
-    return AddMoveItemView(passedMoveItem: nil, passedProperty: property, currUser: "Default User", userList: ["Default User"])
+    let participants = ParticipantInfoViewModel()
+    participants.currUser = "Default User"
+    participants.allParticipants = ["Default User"]
+    
+    return AddMoveItemView(passedMoveItem: nil, passedProperty: property, participants: participants)
 }
