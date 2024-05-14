@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Property.dateCreated, ascending: true)],
         animation: .default)
