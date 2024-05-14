@@ -11,7 +11,7 @@ struct ItemInfoView: View {
     
     @ObservedObject var item: MoveItem
     @ObservedObject var property: Property
-    var userList: [String]
+    @ObservedObject var participants: ParticipantInfoViewModel
     
     @State private var showEditItemView = false
     
@@ -81,9 +81,7 @@ struct ItemInfoView: View {
         }
         .edgesIgnoringSafeArea(.top)
         .sheet(isPresented: $showEditItemView) {
-            if let owner = item.owner {
-                AddMoveItemView(passedMoveItem: item, passedProperty: property, currUser: owner, userList: userList)
-            }
+            AddMoveItemView(passedMoveItem: item, passedProperty: property, participants: participants)
         }
         
         .navigationBarBackButtonHidden(true)
@@ -119,7 +117,11 @@ struct ItemInfoView: View {
 }
 
 #Preview {
-    var viewContext = CoreDataStack.shared.context
+    let viewContext = CoreDataStack.shared.context
     let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: viewContext)
-    return ItemInfoView(item: property.items?.anyObject() as! MoveItem, property: property, userList: ["John Doe"])
+    let participants = ParticipantInfoViewModel()
+    participants.currUser = "Default User"
+    participants.allParticipants = ["Default User"]
+    
+    return ItemInfoView(item: property.items?.anyObject() as! MoveItem, property: property, participants: participants)
 }

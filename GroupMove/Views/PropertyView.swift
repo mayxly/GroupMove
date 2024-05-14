@@ -9,9 +9,15 @@ import SwiftUI
 import CoreData
 import CloudKit
 
+class ParticipantInfoViewModel: ObservableObject {
+    @Published var currUser = ""
+    @Published var allParticipants = [String]()
+}
+
 struct PropertyView: View {
     // Room properties
     @ObservedObject var property: Property
+    @ObservedObject private var participants: ParticipantInfoViewModel = ParticipantInfoViewModel()
     @State private var roomItemMap = [Room: [MoveItem]]()
     @State private var itemsToDelete = [MoveItem]()
     
@@ -87,7 +93,7 @@ struct PropertyView: View {
         .sheet(isPresented: $showAddItemSheet, onDismiss: {
             generateRoomAndItemMapping()
         }){
-            AddMoveItemView(passedMoveItem: nil, passedProperty: property, currUser: getCurrUser(), userList: getAllParticipants())
+            AddMoveItemView(passedMoveItem: nil, passedProperty: property, participants: participants)
         }
         .sheet(isPresented: $showShareSheet) {
             if let share = share {
@@ -104,13 +110,15 @@ struct PropertyView: View {
             AddPropertyView(passedProperty: property)
         }
         .onAppear {
-            generateRoomAndItemMapping()
             self.share = stack.getShare(property)
+            generateRoomAndItemMapping()
             if !stack.isShared(object: property) {
                 Task {
                     await createShare(property)
                 }
             }
+            participants.currUser = getCurrUser()
+            participants.allParticipants = getAllParticipants()
         }
         .onDisappear() {
             if !(itemsToDelete.isEmpty) {
@@ -183,7 +191,7 @@ struct PropertyView: View {
                 Section(roomName) {
                     ForEach(items, id: \.self.id) { item in
                         if let itemName = item.name, let itemID = item.id {
-                            NavigationLink(destination: ItemInfoView(item: item, property: property, userList: getAllParticipants())) {
+                            NavigationLink(destination: ItemInfoView(item: item, property: property, participants: participants)) {
                                 Text(itemName)
                             }
                             .swipeActions {
@@ -240,12 +248,6 @@ extension PropertyView {
                         roomItemMap[room]?.append(item)
                     }
                 }
-            }
-        }
-        for (room, items) in roomItemMap {
-            roomItemMap[room] = items.sorted { $0.dateCreated! > $1.dateCreated! }
-            for item in items {
-                print(item)
             }
         }
     }
