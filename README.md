@@ -11,13 +11,13 @@ Key Features:
 
 
 <p align="center">
-  <img src="https://github.com/mayxly/GroupMove/assets/72419841/fb41eaac-4b85-46f0-aa51-44c1e18c200b" width="200" height="400" />
+  <img src="https://github.com/mayxly/GroupMove/assets/72419841/fb41eaac-4b85-46f0-aa51-44c1e18c200b" width="200" height="420" />
   &ensp;
-  <img src="https://github.com/mayxly/GroupMove/assets/72419841/4c1d59d5-7a0c-46a8-83b1-97f31d05c0a2" width="200" height="400" />
+  <img src="https://github.com/mayxly/GroupMove/assets/72419841/4c1d59d5-7a0c-46a8-83b1-97f31d05c0a2" width="200" height="420" />
   </br>
-  <img src="https://github.com/mayxly/GroupMove/assets/72419841/ca04e3a1-a26d-47ff-854b-73338389b8ba" width="200" height="400" />
+  <img src="https://github.com/mayxly/GroupMove/assets/72419841/ca04e3a1-a26d-47ff-854b-73338389b8ba" width="200" height="420" />
   &ensp;
-  <img src="https://github.com/mayxly/GroupMove/assets/72419841/463758d0-1b3c-476f-96f1-1ab3c6427ca7" width="200" height="400" />
+  <img src="https://github.com/mayxly/GroupMove/assets/72419841/463758d0-1b3c-476f-96f1-1ab3c6427ca7" width="200" height="420" />
   &ensp;
-  <img src="https://github.com/mayxly/GroupMove/assets/72419841/80a5d5f5-e0c3-439e-826c-e199cf581049" width="200" height="400" />
+  <img src="https://github.com/mayxly/GroupMove/assets/72419841/80a5d5f5-e0c3-439e-826c-e199cf581049" width="200" height="420" />
 </p>
