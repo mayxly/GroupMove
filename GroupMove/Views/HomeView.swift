@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct HomeView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -17,6 +18,7 @@ struct HomeView: View {
     @State private var showAddPropertySheet = false
     
     private var stack = CoreDataStack.shared
+    @ObservedObject private var ckUserData = CloudUserData.shared
     
     var body: some View {
         VStack {

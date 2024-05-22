@@ -29,6 +29,7 @@ struct PropertyView: View {
     @State private var share: CKShare?
     @State private var showShareSheet = false
     private let stack = CoreDataStack.shared
+    @State private var showAddButton = false
     
     // Calculate budget
     private var usedBudget: Float {
@@ -68,11 +69,11 @@ struct PropertyView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    showAddItemSheet.toggle()
+                    addItemButton()
                 } label: {
                     Image(systemName: "plus.circle")
                 }
-                .disabled(!stack.canEdit(object: property))
+                .disabled(!stack.canEdit(object: property) || !showAddButton)
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
@@ -116,9 +117,11 @@ struct PropertyView: View {
                 Task {
                     await createShare(property)
                 }
+            } else {
+                participants.currUser = getCurrUser()
+                participants.allParticipants = getAllParticipants()
+                showAddButton = true
             }
-            participants.currUser = getCurrUser()
-            participants.allParticipants = getAllParticipants()
         }
         .onDisappear() {
             if !(itemsToDelete.isEmpty) {
@@ -130,23 +133,24 @@ struct PropertyView: View {
     var NoItemsView: some View {
         VStack {
             Spacer()
-            Text("You don't have any items\nin your property yet!")
-                .foregroundStyle(Color(UIColor.secondaryLabel))
-                .padding(.vertical, 10)
-                .multilineTextAlignment(.center)
-            Button(action: {
-                showAddItemSheet.toggle()
-            }) {
-                Text("Add Item")
+            if showAddButton {
+                Text("You don't have any items\nin your property yet!")
+                    .foregroundStyle(Color(UIColor.secondaryLabel))
+                    .padding(.vertical, 10)
+                    .multilineTextAlignment(.center)
+                Button("Add Item") {
+                    addItemButton()
+                }
+                .padding(.horizontal, 30)
+                .padding(.vertical, 15)
+                .foregroundColor(Color(UIColor.white))
+                .background(Color(hex: "00A5E3"))
+                .cornerRadius(30)
+                .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
+                .transition(.opacity)
+                Spacer()
+                Spacer()
             }
-            .padding(.horizontal, 30)
-            .padding(.vertical, 15)
-            .foregroundColor(Color(UIColor.white))
-            .background(Color(hex: "00A5E3"))
-            .cornerRadius(30)
-            .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
-            Spacer()
-            Spacer()
         }
         .background(Color(UIColor.systemBackground))
     }
@@ -215,6 +219,12 @@ struct PropertyView: View {
 }
 
 extension PropertyView {
+    private func addItemButton() {
+        participants.currUser = getCurrUser()
+        participants.allParticipants = getAllParticipants()
+        showAddItemSheet.toggle()
+    }
+    
     private func calculateUsedBudget() -> Float {
         if property.hasBudget {
             var spent: Float = 0
@@ -258,6 +268,9 @@ extension PropertyView {
             try await stack.persistentContainer.share([property], to: nil)
             share[CKShare.SystemFieldKey.title] = property.name
             self.share = share
+            withAnimation {
+                self.showAddButton = true
+            }
         } catch {
             print("Failed to create share")
         }
