@@ -11,8 +11,8 @@ struct BudgetProgressBar: View {
     var width: CGFloat = UIScreen.main.bounds.width - 80
     var height: CGFloat = 20
     var percent: CGFloat = 70
-    var color1 = Color(hex: "4DD091")
-    var color2 = Color(hex: "00A5E3")
+    var color1 = Color(hex: "74E9B1")
+    var color2 = Color(hex: "6ED7FF")
     var isOverBudget: Bool = false
     
     var body: some View {

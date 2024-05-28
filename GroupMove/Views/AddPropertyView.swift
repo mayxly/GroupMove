@@ -96,7 +96,7 @@ struct AddPropertyView: View {
                             
                         }
                         ZStack {
-                            RoundedRectangle(cornerRadius: 10)
+                            RoundedRectangle(cornerRadius: 30)
                                 .foregroundColor(.black.opacity(0.05))
                                 .frame(height: 40)
                             TextField("Property Name", text: $name)

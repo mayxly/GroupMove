@@ -14,8 +14,9 @@ struct GroupMoveApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            NewPropertyView()
                 .environment(\.managedObjectContext, persistenceController.context)
+                .environment(\.font, Font.custom("Satoshi-Variable", size: 16))
         }
     }
 }
