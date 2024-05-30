@@ -14,7 +14,7 @@ struct CustomSegmentedPicker: View {
     var body: some View {
         ZStack {
             Capsule()
-                    .fill(Color.white)
+                    .fill(Color(hex:"3D3D3D"))
                     .frame(width: 300, height: 40)
             HStack(spacing: 0) {
                 Capsule()
@@ -33,7 +33,7 @@ struct CustomSegmentedPicker: View {
                         PickerSegmentView(text: option)
                             .clipShape(Capsule())
                     } else {
-                        PickerSegmentView(text: option, textColor: Color(hex: "5B5B5B"))
+                        PickerSegmentView(text: option, selectedTextColor: Color(hex: "C3C3C3"))
                             .background(Color.white.opacity(0))
                             .onTapGesture {
                                 withAnimation(.bouncy) {
@@ -44,26 +44,25 @@ struct CustomSegmentedPicker: View {
                 }
             }
         }
-        .background(.white)
+        .background(Color(hex:"3D3D3D"))
         .clipShape(Capsule())
     }
 }
 
 struct PickerSegmentView: View { 
     var text: String
-    var textColor = Color.white
+    var selectedTextColor = Color.white
     var width = CGFloat(150)
     var height = CGFloat(20)
     
     var body: some View {
         HStack {
             Text(text)
-                .font(Font.custom("Satoshi-Variable", size: 16))
-                .foregroundColor(textColor)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(selectedTextColor)
         }
         .frame(width: width, height: height)
         .padding(.vertical, 10)
-        
     }
 }
 

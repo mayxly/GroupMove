@@ -30,7 +30,6 @@
 		FD54FC502BE2B84D00FF9F9D /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD54FC4F2BE2B84D00FF9F9D /* CoreDataStack.swift */; };
 		FD658C472BE1AEBE00B6DAA1 /* PreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD658C462BE1AEBE00B6DAA1 /* PreviewManager.swift */; };
 		FDD3D9BC2BFBD026002CD039 /* CloudUserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD3D9BB2BFBD026002CD039 /* CloudUserData.swift */; };
-		FDD3D9C02C00CF01002CD039 /* NewPropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD3D9BF2C00CF01002CD039 /* NewPropertyView.swift */; };
 		FDD3D9C22C00D4E0002CD039 /* CustomSegmentedPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD3D9C12C00D4E0002CD039 /* CustomSegmentedPicker.swift */; };
 		FDD3D9C42C00E4A3002CD039 /* CustomSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD3D9C32C00E4A3002CD039 /* CustomSections.swift */; };
 		FDD3D9C82C00E80A002CD039 /* Satoshi-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FDD3D9C62C00E7EE002CD039 /* Satoshi-Variable.ttf */; };
@@ -84,7 +83,6 @@
 		FD54FC4F2BE2B84D00FF9F9D /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		FD658C462BE1AEBE00B6DAA1 /* PreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewManager.swift; sourceTree = "<group>"; };
 		FDD3D9BB2BFBD026002CD039 /* CloudUserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudUserData.swift; sourceTree = "<group>"; };
-		FDD3D9BF2C00CF01002CD039 /* NewPropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPropertyView.swift; sourceTree = "<group>"; };
 		FDD3D9C12C00D4E0002CD039 /* CustomSegmentedPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSegmentedPicker.swift; sourceTree = "<group>"; };
 		FDD3D9C32C00E4A3002CD039 /* CustomSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSections.swift; sourceTree = "<group>"; };
 		FDD3D9C62C00E7EE002CD039 /* Satoshi-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Satoshi-Variable.ttf"; sourceTree = "<group>"; };
@@ -198,7 +196,6 @@
 				683EABC32BE19C1900520B15 /* RoomPickerView.swift */,
 				6883EC282BE55B3000AF592F /* ItemInfoView.swift */,
 				FD18B4EC2BE94B3A00577F1E /* ImagePicker.swift */,
-				FDD3D9BF2C00CF01002CD039 /* NewPropertyView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -376,7 +373,6 @@
 				FD18B4EF2BE9879500577F1E /* BudgetProgressBar.swift in Sources */,
 				687703562BDEF61300905600 /* AddPropertyView.swift in Sources */,
 				FDD3D9C42C00E4A3002CD039 /* CustomSections.swift in Sources */,
-				FDD3D9C02C00CF01002CD039 /* NewPropertyView.swift in Sources */,
 				FD18B4EB2BE594CE00577F1E /* AppDelegate.swift in Sources */,
 				FDD3D9C22C00D4E0002CD039 /* CustomSegmentedPicker.swift in Sources */,
 				6877032D2BDDCB5F00905600 /* GroupMove.xcdatamodeld in Sources */,

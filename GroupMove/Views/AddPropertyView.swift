@@ -74,56 +74,75 @@ struct AddPropertyView: View {
         }
     }
     
-    var body: some View {
-        NavigationView {
-            VStack() {
-                Form {
-                    Section() {
-                        ZStack {
-                            HStack {
-                                Spacer()
-                                Circle()
-                                    .frame(width: 100)
-                                    .foregroundColor(Color(hex: selectedColor))
-                                    .padding(.top, 10)
-                                Spacer()
-                            }
-                            Image(systemName: "house.fill")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.white)
-                                .padding(.top, 10)
-                            
+    var propertyNameSection: some View {
+        Section {
+            ZStack {
+                VStack {
+                    BackgroundRect(height: 175)
+                }
+                VStack(alignment: .leading) {
+                    ZStack {
+                        HStack {
+                            Spacer()
+                            Circle()
+                                .frame(width: 80)
+                                .foregroundColor(Color(hex: selectedColor))
+                                .padding(.top, 20)
+                            Spacer()
                         }
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 30)
-                                .foregroundColor(.black.opacity(0.05))
-                                .frame(height: 40)
-                            TextField("Property Name", text: $name)
-                                .multilineTextAlignment(.center)
-                                .alert("Save Error", isPresented: $showingNameError) {
-                                } message: {
-                                    Text("Please enter a property name.")
-                                }
-                                .onChange(of: name) { _ in
-                                    hasEditedName = true
-                                }
-                                .disabled(priceKeyboardIsFocused)
-                                .onTapGesture {
-                                    priceKeyboardIsFocused = false
-                                }
-                        }
-                    } footer: {
-                        if hasEditedName {
-                            Text("Property name is required")
-                                .font(.caption)
-                                .foregroundColor(name.isEmpty ? .red : .clear)
-                        }
+                        Image("HomeIcon")
+                            .resizable()
+                            .frame(width: 45, height: 45)
+                            .foregroundColor(.white)
+                            .padding(.top, 20)
                     }
-                    .listRowSeparator(.hidden)
-                    
-                    Section(header: Text("Budget"),
-                            footer: Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 30)
+                            .foregroundColor(.black.opacity(0.05))
+                            .frame(height: 40)
+                            .padding(.horizontal, 20)
+                        TextField("Property Name", text: $name)
+                            .multilineTextAlignment(.center)
+                            .alert("Save Error", isPresented: $showingNameError) {
+                            } message: {
+                                Text("Please enter a property name.")
+                            }
+                            .onChange(of: name) { _ in
+                                hasEditedName = true
+                            }
+                            .disabled(priceKeyboardIsFocused)
+                            .onTapGesture {
+                                priceKeyboardIsFocused = false
+                            }
+                    }
+                }
+            }
+            .padding(.horizontal, 30)
+        } footer: {
+            if hasEditedName {
+                Text("Property name is required")
+                    .font(.caption)
+                    .foregroundColor(name.isEmpty ? .red : .clear)
+            }
+        }
+        .listRowSeparator(.hidden)
+    }
+    
+    var budgetSection: some View {
+        Section { // Budget Section
+            VStack {
+                HStack {
+                    Text("Budget")
+                        .padding(.horizontal, 30)
+                        .foregroundStyle(Color(hex:"5B5B5B"))
+                    Spacer()
+                }
+                ZStack {
+                    VStack {
+                        BackgroundRect(height: hasBudget ? 80 : 45)
+                        Spacer()
+                    }
+                    VStack {
                         Toggle("Add Budget", isOn: $hasBudget)
                             .onChange(of: hasBudget) { newValue in
                                 budgetAmountText = ""
@@ -131,40 +150,91 @@ struct AddPropertyView: View {
                         if hasBudget {
                             PriceTextField(priceAmountText: $budgetAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
                         }
+                        Spacer()
                     }
-                    Section("Rooms") {
+                    .padding(.horizontal, 20)
+                    .padding(.top, 7)
+                }
+                .padding(.horizontal, 30)
+                HStack {
+                    Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")
+                        .padding(.horizontal, 40)
+                        .font(.caption)
+                        .foregroundStyle(Color(hex:"939393"))
+                    Spacer()
+                }
+            }
+            .padding(.top, 20)
+        }
+    }
+    
+    var roomPickerSection: some View {
+        Section {
+            VStack {
+                HStack {
+                    Text("Rooms")
+                        .padding(.horizontal, 30)
+                        .foregroundStyle(Color(hex:"5B5B5B"))
+                    Spacer()
+                }
+                ZStack {
+                    BackgroundRect(height: 45)
+                    
+                    HStack {
                         NavigationLink(destination: RoomPickerView(selectedRooms: $selectedRooms)) {
                             if selectedRooms.isEmpty {
                                 Text("Add rooms...")
                             } else {
                                 Text(selectedRooms.joined(separator: ", "))
                             }
-                        }
+                        }.foregroundStyle(.black)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
                     }
-                    Section("Color") {
-                        LazyVGrid(columns: columns, spacing: 16) {
-                            ForEach(colors, id: \.self) { color in
-                                Circle()
-                                    .fill(Color(hex: color))
-                                    .frame(width: 40)
-                                    .overlay(
-                                        Circle()
-                                            .stroke(.white, lineWidth: selectedColor == color ? 3 : 0)
-                                            .padding(2)
-                                    )
-                                    .overlay(
-                                        Circle()
-                                            .stroke(.gray.opacity(0.5), lineWidth: selectedColor == color ? 4 : 0)
-                                    )
-                                    .onTapGesture {
-                                        selectedColor = color
-                                    }
-                            }
-                        }
-                        .padding(.vertical, 12)
-                    }
+                    .padding(.horizontal, 20)
+                }
+                .padding(.horizontal, 30)
+            }
+            .padding(.top, 20)
+        }
+    }
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color(hex:"F5F5F5").ignoresSafeArea()
+                
+                VStack(alignment: .leading, spacing: 0) {
+                    propertyNameSection
+                    budgetSection
+                    roomPickerSection
+//                    Section("Color") {
+//                        LazyVGrid(columns: columns, spacing: 16) {
+//                            ForEach(colors, id: \.self) { color in
+//                                Circle()
+//                                    .fill(Color(hex: color))
+//                                    .frame(width: 40)
+//                                    .overlay(
+//                                        Circle()
+//                                            .stroke(.white, lineWidth: selectedColor == color ? 3 : 0)
+//                                            .padding(2)
+//                                    )
+//                                    .overlay(
+//                                        Circle()
+//                                            .stroke(.gray.opacity(0.5), lineWidth: selectedColor == color ? 4 : 0)
+//                                    )
+//                                    .onTapGesture {
+//                                        selectedColor = color
+//                                    }
+//                            }
+//                        }
+//                        .padding(.vertical, 12)
+//                    }
+                    Spacer()
                 }
             }
+            
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel", role: .cancel) {
@@ -182,13 +252,14 @@ struct AddPropertyView: View {
                     }
                 }
             }
-            .onAppear {
-                if shouldAddDefaultRooms {
-                    addDefaultRooms()
-                    shouldAddDefaultRooms = false
-                }
+        }
+        .onAppear {
+            if shouldAddDefaultRooms {
+                addDefaultRooms()
+                shouldAddDefaultRooms = false
             }
         }
+        
         .interactiveDismissDisabled()
     }
     
