@@ -21,95 +21,91 @@ struct HomeView: View {
     @ObservedObject private var ckUserData = CloudUserData.shared
     
     var body: some View {
-        VStack {
-            NavigationView {
-                VStack {
-                    ZStack {
-                        List {
-                            Section() {
-                                ForEach(homes, id: \.self) { home in
-                                    NavigationLink(destination: PropertyView(property: home)) {
-                                        HStack {
-                                            ZStack {
-                                                Circle()
-                                                    .frame(width: 32)
-                                                    .padding(.vertical, 4)
-                                                    .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
-                                                Image(systemName: "house.fill")
-                                                    .resizable()
-                                                    .frame(width: 16, height: 16)
-                                                    .padding(.vertical, 4)
-                                                    .foregroundColor(.white)
-                                            }
-                                            Text(home.name ?? "Property")
-                                                .bold()
-                                                .padding(.horizontal, 8)
-                                            if home.isShared {
-                                                Spacer()
-                                                Image(systemName: "person.2.fill")
-                                                    .resizable()
-                                                    .aspectRatio(contentMode: .fit)
-                                                    .frame(width: 20)
-                                                    .foregroundColor(.gray.opacity(0.5))
-                                                    .padding(.trailing, 12)
-                                            }
-                                        }
-                                    }
-                                    .deleteDisabled(!stack.canDelete(object: home))
+        ZStack {
+            List {
+                Section() {
+                    ForEach(homes, id: \.self) { home in
+                        NavigationLink(destination: PropertyView()) {
+                            HStack {
+                                ZStack {
+                                    Circle()
+                                        .frame(width: 32)
+                                        .padding(.vertical, 4)
+                                        .foregroundStyle(Color(hex: home.color ?? "#00A5E3"))
+                                    Image(systemName: "house.fill")
+                                        .resizable()
+                                        .frame(width: 16, height: 16)
+                                        .padding(.vertical, 4)
+                                        .foregroundColor(.white)
                                 }
-                                .onDelete(perform: delete)
-                            } header: {
-                                HStack {
-                                    Text("My Properties")
-                                        .font(.system(size: 16))
-                                        .bold()
+                                Text(home.name ?? "Property")
+                                    .bold()
+                                    .padding(.horizontal, 8)
+                                if home.isShared {
                                     Spacer()
-                                    Button(action: {
-                                        showAddPropertySheet.toggle()
-                                    }) {
-                                        Image(systemName: "plus")
-                                    }
+                                    Image(systemName: "person.2.fill")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 20)
+                                        .foregroundColor(.gray.opacity(0.5))
+                                        .padding(.trailing, 12)
                                 }
-                                .listRowInsets(.init(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)))
                             }
                         }
-                        .listRowSpacing(10)
-                        if homes.count < 1 {
-                            VStack {
-                                Spacer()
-                                Text("You don't have any properties yet!")
-                                    .foregroundStyle(Color(UIColor.secondaryLabel))
-                                    .padding(.vertical, 10)
-                                    .multilineTextAlignment(.center)
-                                Button(action: {
-                                    showAddPropertySheet.toggle()
-                                }) {
-                                    Text("Add Property")
-                                }
-                                .padding(.horizontal, 30)
-                                .padding(.vertical, 15)
-                                .foregroundColor(.white)
-                                .background(Color(hex: "00A5E3"))
-                                .cornerRadius(30)
-                                .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
-                                Spacer()
-                                Spacer()
-                            }
+                        .deleteDisabled(!stack.canDelete(object: home))
+                    }
+                    .onDelete(perform: delete)
+                } header: {
+                    HStack {
+                        Text("My Properties")
+                            .font(.system(size: 16))
+                            .bold()
+                        Spacer()
+                        Button(action: {
+                            showAddPropertySheet.toggle()
+                        }) {
+                            Image(systemName: "plus")
                         }
                     }
-                }
-                .navigationTitle("Homes")
-                .toolbar {
-                    if homes.count > 0 {
-                        EditButton()
-                    }
+                    .listRowInsets(.init(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)))
                 }
             }
-            .sheet(isPresented: $showAddPropertySheet) {
-                AddPropertyView(passedProperty: nil)
+            .listRowSpacing(10)
+            if homes.count < 1 {
+                VStack {
+                    Spacer()
+                    Text("You don't have any properties yet!")
+                        .foregroundStyle(Color(UIColor.secondaryLabel))
+                        .padding(.vertical, 10)
+                        .multilineTextAlignment(.center)
+                    Button(action: {
+                        showAddPropertySheet.toggle()
+                    }) {
+                        Text("Add Property")
+                    }
+                    .padding(.horizontal, 30)
+                    .padding(.vertical, 15)
+                    .foregroundColor(.white)
+                    .background(Color(hex: "00A5E3"))
+                    .cornerRadius(30)
+                    .shadow(color: /*@START_MENU_TOKEN@*/.black/*@END_MENU_TOKEN@*/.opacity(0.3), radius: 3, x: 3, y: 3)
+                    Spacer()
+                    Spacer()
+                }
             }
         }
+        //            .toolbar {
+        //                if homes.count > 0 {
+        //                    EditButton()
+        //                }
+        //            }
+        
+        .sheet(isPresented: $showAddPropertySheet) {
+            AddPropertyView(passedProperty: nil)
+        }
     }
+    
+    
 }
 
 extension HomeView {

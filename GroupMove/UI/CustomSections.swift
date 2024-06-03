@@ -17,6 +17,8 @@ struct BackgroundRect: View {
     }
 }
 
+
+
 #Preview {
     let room = "Kitchen"
     @State var propertyName = ""
@@ -26,10 +28,10 @@ struct BackgroundRect: View {
         ZStack {
             Color.gray.ignoresSafeArea()
             VStack {
-                BackgroundRect(height: 120)
                 Spacer()
+//                BackgroundRect(height: 120)
+//                    .padding(.horizontal, 20)
             }
-            .padding(.horizontal, 20)
         }
     }
 }

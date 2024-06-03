@@ -16,16 +16,18 @@ class ParticipantInfoViewModel: ObservableObject {
 
 struct PropertyView: View {
     // Room properties
-    @ObservedObject var property: Property
+    @ObservedObject var pm: PropertyManager = PropertyManager.shared
     @ObservedObject var participants: ParticipantInfoViewModel = ParticipantInfoViewModel()
     @State private var roomItemMap = [Room: [MoveItem]]()
     @State var itemsToDelete = [MoveItem]()
     
     // Show sheets
+    @State private var showHomesSheet = false
     @State private var showAddItemSheet = false
     @State private var showEditPropertySheet = false
     let allViews = ["Overview", "Moving List"]
     @State private var selectedView = "Overview"
+    @State private var showEllipsisView = false
     
     // CloudKit Sharing
     @State private var share: CKShare?
@@ -55,7 +57,7 @@ struct PropertyView: View {
             }
             .padding(.horizontal, 20)
         }
-        .padding(.horizontal, 30)
+        .padding(.horizontal, 20)
     }
     
     var noItemsView: some View {
@@ -63,7 +65,7 @@ struct PropertyView: View {
             Spacer()
             if showAddButton {
                 Text("You don't have any items\nin your property yet!")
-                    .foregroundStyle(Color(UIColor.secondaryLabel))
+                    .foregroundStyle(Color.white)
                     .padding(.vertical, 10)
                     .multilineTextAlignment(.center)
                 Button("Add Item") {
@@ -80,7 +82,6 @@ struct PropertyView: View {
                 Spacer()
             }
         }
-        .background(Color(UIColor.systemBackground))
     }
     
     var roomsSection: some View {
@@ -96,83 +97,123 @@ struct PropertyView: View {
                     RoomSection(roomName: roomName, items: items, propertyView: self)
                 }
             }
-            
         }
+        .padding(.horizontal, 10)
     }
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text(property.name ?? "My Home")
-                .foregroundStyle(.white)
-                .fontWeight(.bold)
-                .font(.system(size: 18))
-            CustomSegmentedPicker(options: allViews, selectedOption: $selectedView)
-            
-            // No Items
-            if roomItemMap.count < 1 {
-                noItemsView
-            } else {
-                // Budget
-                if property.hasBudget {
-                    budgetSection
+        NavigationView {
+            ZStack {
+                Color(hex:"292929").ignoresSafeArea()
+                VStack(spacing: 20) {
+                    CustomSegmentedPicker(options: allViews, selectedOption: $selectedView)
+                    
+                    // No Items
+                    if roomItemMap.count < 1 {
+                        noItemsView
+                    } else {
+                        // Budget
+                        if pm.activeProperty!.hasBudget {
+                            budgetSection
+                        }
+                        // Rooms and Items
+                        roomsSection
+                    }
+                    Spacer()
                 }
-                // Rooms and Items
-                roomsSection
             }
-            Spacer()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Button {
+                        showHomesSheet = true
+                    } label: {
+                        HStack(spacing: 5) {
+                            Text(pm.activeProperty!.name ?? "My Home")
+                                .foregroundStyle(.white)
+                                .fontWeight(.bold)
+                                .font(.system(size: 18))
+                            Image(systemName: "chevron.down")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.white)
+                                .frame(width: 15, height: 15)
+                        }
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { } label: {
+                        Image(systemName: "ellipsis")
+                            .foregroundStyle(.white)
+                            .onTapGesture {
+                                showEllipsisView.toggle()
+                            }
+                            .popover(isPresented: $showEllipsisView) {
+                                VStack {
+                                    Button {
+                                        showEditPropertySheet.toggle()
+                                    } label: {
+                                        Text("Edit")
+                                    }
+                                }
+                                .presentationCompactAdaptation((.popover))
+                            }
+                    }
+                    //                    HStack {
+                    //
+                    //                        Button {
+                    //                            addItemButton()
+                    //                        } label: {
+                    //                            Image(systemName: "plus.circle")
+                    //                                .foregroundStyle(Color(hex: "3D3D3D"))
+                    //                        }
+                    //                        .disabled(!stack.canEdit(object: property) || !showAddButton)
+                    //                        Button {
+                    //                            showShareSheet = true
+                    //                        } label: {
+                    //                            Image(systemName: "person.badge.plus")
+                    //                        }
+                    //                        Button {
+                    //                            showEditPropertySheet.toggle()
+                    //                        } label: {
+                    //                            Image(systemName: "pencil.circle.fill")
+                    //                                .foregroundStyle(Color(hex: "3D3D3D"))
+                    //                        }
+                    //                        .disabled(!stack.canEdit(object: property))
+                    //                    }
+                }
+            }
         }
-        .background(Color(hex:"292929"))
-        .navigationTitle(property.name ?? "Property")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    addItemButton()
-                } label: {
-                    Image(systemName: "plus.circle")
-                }
-                .disabled(!stack.canEdit(object: property) || !showAddButton)
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    showShareSheet = true
-                } label: {
-                    Image(systemName: "person.badge.plus")
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showEditPropertySheet.toggle()
-                } label: {
-                    Text("Edit")
-                }
-                .disabled(!stack.canEdit(object: property))
-            }
+        .sheet(isPresented: $showHomesSheet) {
+            NewHomeView()
+                .presentationDetents([.fraction(CGFloat(0.4))])
+                .presentationDragIndicator(.hidden)
         }
         .sheet(isPresented: $showAddItemSheet, onDismiss: {
             generateRoomAndItemMapping()
         }){
-            AddMoveItemView(passedMoveItem: nil, passedProperty: property, participants: participants)
+            AddMoveItemView(passedMoveItem: nil, passedProperty: pm.activeProperty!, participants: participants)
         }
         .sheet(isPresented: $showShareSheet) {
             if let share = share {
                 CloudSharingView(
                     share: share,
                     container: stack.ckContainer,
-                    property: property
+                    property: pm.activeProperty!
                 )
             }
         }
         .sheet(isPresented: $showEditPropertySheet, onDismiss: {
             generateRoomAndItemMapping()
         }) {
-            AddPropertyView(passedProperty: property)
+            AddPropertyView(passedProperty: pm.activeProperty)
         }
         .onAppear {
-            self.share = stack.getShare(property)
+            self.share = stack.getShare(pm.activeProperty!)
             generateRoomAndItemMapping()
-            if !stack.isShared(object: property) {
+            if !stack.isShared(object: pm.activeProperty!) {
                 Task {
-                    await createShare(property)
+                    await createShare(pm.activeProperty!)
                 }
             } else {
                 participants.currUser = getCurrUser()
@@ -192,13 +233,14 @@ extension PropertyView {
     private func addItemButton() {
         participants.currUser = getCurrUser()
         participants.allParticipants = getAllParticipants()
+
         showAddItemSheet.toggle()
     }
     
     private func calculateUsedBudget() -> Float {
-        if property.hasBudget {
+        if pm.activeProperty!.hasBudget {
             var spent: Float = 0
-            if let items = property.items?.allObjects as? [MoveItem] {
+            if let items = pm.activeProperty!.items?.allObjects as? [MoveItem] {
                 for item in items {
                     spent += item.price
                 }
@@ -219,7 +261,7 @@ extension PropertyView {
     
     private func generateRoomAndItemMapping() {
         roomItemMap = [:]
-        if let items = property.items?.allObjects as? [MoveItem] {
+        if let items = pm.activeProperty!.items?.allObjects as? [MoveItem] {
             for item in items {
                 if let room = item.room {
                     if roomItemMap[room] == nil {
@@ -263,7 +305,7 @@ extension PropertyView {
             }
         }
         if users.count > 1 {
-            property.isShared = true
+            pm.activeProperty!.isShared = true
         }
         return users
     }
@@ -332,7 +374,7 @@ struct RoomSection: View {
             VStack(alignment: .leading) {
                 HStack {
                     Text(roomName)
-                        .bold()
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.white)
                     Spacer()
                     Button(action: {
@@ -358,7 +400,7 @@ struct RoomSection: View {
             .padding(.top, 20)
             .padding(.horizontal, 20)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 10)
     }
 }
 
@@ -367,7 +409,7 @@ struct ItemNavLink: View {
     var propertyView: PropertyView
     
     var body: some View {
-        NavigationLink(destination: ItemInfoView(item: moveItem, property: propertyView.property, participants: propertyView.participants)) {
+        NavigationLink(destination: ItemInfoView(item: moveItem, property: propertyView.pm.activeProperty!, participants: propertyView.participants)) {
             ZStack {
                 RoundedRectangle(cornerRadius: 30)
                     .fill(Color(hex: "3D3D3D"))
@@ -383,7 +425,7 @@ struct ItemNavLink: View {
         }
         .swipeActions {
             Button(role: .destructive) {
-                if let allItems = propertyView.property.items?.allObjects as? [MoveItem] {
+                if let allItems = propertyView.pm.activeProperty!.items?.allObjects as? [MoveItem] {
                     if let itemToDelete = allItems.first(where: {$0.id == moveItem.id }) {
                         propertyView.itemsToDelete.append(itemToDelete)
                     }
@@ -397,12 +439,15 @@ struct ItemNavLink: View {
 
 struct PropertyView_Previews: PreviewProvider {
     static let viewContext = CoreDataStack.shared.context
+    static let propertyManager = PropertyManager.shared
     
     static var previews: some View {
         let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: viewContext)
         property.hasBudget = true
         property.budget = 100.0
         
-        return PropertyView(property: property)
+        propertyManager.activeProperty = property
+        
+        return PropertyView()
     }
 }
