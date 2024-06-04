@@ -12,7 +12,7 @@ struct PriceTextField: View {
     @FocusState var priceKeyboardIsFocused: Bool
 
     var body: some View {
-        TextField("$0.00", text: $priceAmountText)
+        TextField("$", text: $priceAmountText, prompt: Text("$0.00").foregroundColor(Color(hex: "C3C3C3")))
             .keyboardType(.decimalPad)
             .focused($priceKeyboardIsFocused)
             .onChange(of: priceAmountText) { newText in

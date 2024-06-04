@@ -76,32 +76,32 @@ struct AddPropertyView: View {
     
     var propertyNameSection: some View {
         Section {
-            ZStack {
+            ZStack(alignment: .center) {
                 VStack {
                     BackgroundRect(height: 175)
                 }
-                VStack(alignment: .leading) {
+                VStack() {
                     ZStack {
                         HStack {
                             Spacer()
                             Circle()
                                 .frame(width: 80)
                                 .foregroundColor(Color(hex: selectedColor))
-                                .padding(.top, 20)
                             Spacer()
                         }
                         Image("HomeIcon")
                             .resizable()
                             .frame(width: 45, height: 45)
                             .foregroundColor(.white)
-                            .padding(.top, 20)
+
                     }
                     ZStack {
                         RoundedRectangle(cornerRadius: 30)
-                            .foregroundColor(.black.opacity(0.05))
+                            .foregroundStyle(Color(hex: "505050"))
                             .frame(height: 40)
                             .padding(.horizontal, 20)
-                        TextField("Property Name", text: $name)
+                        TextField("", text: $name, prompt: Text("Property Name").foregroundColor(Color(hex: "C3C3C3")))
+                            .foregroundStyle(.white)
                             .multilineTextAlignment(.center)
                             .alert("Save Error", isPresented: $showingNameError) {
                             } message: {
@@ -117,14 +117,15 @@ struct AddPropertyView: View {
                     }
                 }
             }
-            .padding(.horizontal, 30)
         } footer: {
-            if hasEditedName {
+            if hasEditedName && name.isEmpty {
                 Text("Property name is required")
                     .font(.caption)
                     .foregroundColor(name.isEmpty ? .red : .clear)
+                    .padding(.top, 5)
             }
         }
+        .padding(.horizontal, 30)
         .listRowSeparator(.hidden)
     }
     
@@ -134,26 +135,39 @@ struct AddPropertyView: View {
                 HStack {
                     Text("Budget")
                         .padding(.horizontal, 30)
-                        .foregroundStyle(Color(hex:"5B5B5B"))
+                        .foregroundStyle(Color(hex:"B9B9B9"))
                     Spacer()
                 }
-                ZStack {
-                    VStack {
-                        BackgroundRect(height: hasBudget ? 80 : 45)
-                        Spacer()
+                ZStack(alignment: .top) {
+                    VStack() {
+                        BackgroundRect(height: hasBudget ? 90 : 45)
                     }
-                    VStack {
-                        Toggle("Add Budget", isOn: $hasBudget)
-                            .onChange(of: hasBudget) { newValue in
-                                budgetAmountText = ""
-                            }
-                        if hasBudget {
-                            PriceTextField(priceAmountText: $budgetAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
+                    VStack(spacing: 0) {
+                        ZStack {
+                            Rectangle() // Invisible rect to center elements
+                                .frame(height: 45)
+                                .opacity(0)
+                            Toggle("Add Budget", isOn: $hasBudget.animation(.bouncy))
+                                .foregroundStyle(.white)
+                                .onChange(of: hasBudget) { newValue in
+                                    budgetAmountText = ""
+                                }
+                                .padding(.horizontal, 20)
                         }
-                        Spacer()
+                        if hasBudget {
+                            Divider().background(Color(hex: "505050"))
+                            ZStack {
+                                Rectangle() // Invisible rect to center elements
+                                    .frame(height: 45)
+                                    .opacity(0)
+                                PriceTextField(priceAmountText: $budgetAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
+                                    .padding(.horizontal, 20)
+                                    .foregroundStyle(.white)
+                            }
+                            
+                        }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 7)
+                    
                 }
                 .padding(.horizontal, 30)
                 HStack {
@@ -174,7 +188,7 @@ struct AddPropertyView: View {
                 HStack {
                     Text("Rooms")
                         .padding(.horizontal, 30)
-                        .foregroundStyle(Color(hex:"5B5B5B"))
+                        .foregroundStyle(Color(hex:"B9B9B9"))
                     Spacer()
                 }
                 ZStack {
@@ -187,7 +201,8 @@ struct AddPropertyView: View {
                             } else {
                                 Text(selectedRooms.joined(separator: ", "))
                             }
-                        }.foregroundStyle(.black)
+                        }
+                        .foregroundStyle(.white)
                         Spacer()
                         Image(systemName: "chevron.right")
                             .foregroundColor(.gray)
@@ -200,37 +215,54 @@ struct AddPropertyView: View {
         }
     }
     
+    var colorPickerSection: some View {
+        Section() {
+            VStack {
+                HStack {
+                    Text("Color")
+                        .foregroundStyle(Color(hex:"B9B9B9"))
+                    Spacer()
+                }
+                ZStack {
+                    BackgroundRect(height: 135)
+                    LazyVGrid(columns: columns, spacing: 16) {
+                        ForEach(colors, id: \.self) { color in
+                            Circle()
+                                .fill(Color(hex: color))
+                                .frame(width: 40)
+                                .overlay(
+                                    Circle()
+                                        .stroke(.white, lineWidth: selectedColor == color ? 3 : 0)
+                                        .padding(2)
+                                )
+                                .overlay(
+                                    Circle()
+                                        .stroke(.gray.opacity(0.5), lineWidth: selectedColor == color ? 4 : 0)
+                                )
+                                .onTapGesture {
+                                    selectedColor = color
+                                }
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                }
+            }
+            .padding(.horizontal, 30)
+            .padding(.top, 20)
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex:"F5F5F5").ignoresSafeArea()
+                Color(hex:"292929").ignoresSafeArea()
                 
                 VStack(alignment: .leading, spacing: 0) {
                     propertyNameSection
                     budgetSection
                     roomPickerSection
-//                    Section("Color") {
-//                        LazyVGrid(columns: columns, spacing: 16) {
-//                            ForEach(colors, id: \.self) { color in
-//                                Circle()
-//                                    .fill(Color(hex: color))
-//                                    .frame(width: 40)
-//                                    .overlay(
-//                                        Circle()
-//                                            .stroke(.white, lineWidth: selectedColor == color ? 3 : 0)
-//                                            .padding(2)
-//                                    )
-//                                    .overlay(
-//                                        Circle()
-//                                            .stroke(.gray.opacity(0.5), lineWidth: selectedColor == color ? 4 : 0)
-//                                    )
-//                                    .onTapGesture {
-//                                        selectedColor = color
-//                                    }
-//                            }
-//                        }
-//                        .padding(.vertical, 12)
-//                    }
+                    colorPickerSection
                     Spacer()
                 }
             }

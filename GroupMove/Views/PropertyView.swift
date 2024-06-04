@@ -130,9 +130,8 @@ struct PropertyView: View {
                     } label: {
                         HStack(spacing: 5) {
                             Text(pm.activeProperty!.name ?? "My Home")
-                                .foregroundStyle(.white)
-                                .fontWeight(.bold)
-                                .font(.system(size: 18))
+                                .foregroundStyle(.white)    
+                                .font(Font.custom("SatoshiVariable-Bold_Bold", size: 18))
                             Image(systemName: "chevron.down")
                                 .resizable()
                                 .scaledToFit()
@@ -184,14 +183,17 @@ struct PropertyView: View {
                 }
             }
         }
-        .sheet(isPresented: $showHomesSheet) {
+        .sheet(isPresented: $showHomesSheet, onDismiss: {
+            generateRoomAndItemMapping()
+        }) {
             NewHomeView()
-                .presentationDetents([.fraction(CGFloat(0.4))])
+                .presentationDetents([.medium])
                 .presentationDragIndicator(.hidden)
+                .presentationCornerRadius(30)
         }
         .sheet(isPresented: $showAddItemSheet, onDismiss: {
             generateRoomAndItemMapping()
-        }){
+        }) {
             AddMoveItemView(passedMoveItem: nil, passedProperty: pm.activeProperty!, participants: participants)
         }
         .sheet(isPresented: $showShareSheet) {

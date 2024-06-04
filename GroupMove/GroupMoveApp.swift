@@ -17,7 +17,7 @@ struct GroupMoveApp: App {
         WindowGroup {
             LoadingScreen()
                 .environment(\.managedObjectContext, stack.context)
-                .environment(\.font, Font.custom("Satoshi-Variable", size: 16))
+                .environment(\.font, Font.custom("Satoshi Variable", size: 16))
         }
     }
 }

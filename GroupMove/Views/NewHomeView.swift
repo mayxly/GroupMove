@@ -38,24 +38,23 @@ struct NewHomeView: View {
                         }
                         .listRowSpacing(10)
                     }
-                    //                .swipeActions(content: delete)
-                    
                     Button {
                         showAddPropertySheet.toggle()
                     } label: {
                         ZStack {
                             Circle()
                                 .fill(Color(hex: "1FB1F0"))
-                                .frame(width: 75, height: 75)
+                                .frame(width: 50, height: 50)
                             Image(systemName: "plus")
                                 .resizable()
-                                .frame(width: 25, height: 25)
+                                .frame(width: 20, height: 20)
                                 .foregroundStyle(.white)
                         }
                         
                     }
                 }
-                .padding(20)
+                .padding(.horizontal, 30)
+                .padding(.top, 30)
             }
         }
     }
@@ -95,14 +94,16 @@ extension NewHomeView {
 struct HomeNavLink: View {
     var home: Property
     let propertyManager = PropertyManager.shared
+    @Environment(\.dismiss) var done
     
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 30)
                 .fill(Color(hex: "3D3D3D"))
-                .frame(maxWidth: .infinity, minHeight: 60)
+                .frame(maxWidth: .infinity, minHeight: 70)
             Button {
                 propertyManager.setNewActiveProperty(property: home)
+                done()
             } label: {
                 HStack {
                     ZStack {
@@ -119,11 +120,12 @@ struct HomeNavLink: View {
                     Text(home.name ?? "My House")
                         .foregroundColor(.white)
                     Spacer()
-                    Image(systemName: "checkmark.circle.fill")
+                    Image(systemName: "checkmark.circle")
                         .resizable()
-                        .frame(width: 16, height: 16)
+                        .frame(width: 25, height: 25)
                         .padding(.vertical, 4)
-                        .foregroundColor(.white)
+                        .padding(.trailing, 10)
+                        .foregroundColor(Color(hex: "C3C3C3"))
                         .opacity(propertyManager.activeProperty == home ? 100 : 0)
                 }.padding(.horizontal, 15)
             }
@@ -131,8 +133,13 @@ struct HomeNavLink: View {
     }
 }
 
-struct NewHomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        NewHomeView()
-    }
+#Preview {
+    let stack = CoreDataStack.shared
+    let propertyManager = PropertyManager.shared
+    
+    let property = PreviewManager.shared.getPropertyWithItemsAndRooms(context: stack.context)
+    
+    propertyManager.activeProperty = property
+    
+    return NewHomeView()
 }
