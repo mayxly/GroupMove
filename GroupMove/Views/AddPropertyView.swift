@@ -29,6 +29,7 @@ struct AddPropertyView: View {
     
     private var stack = CoreDataStack.shared
     
+    // UI
     let colors = [
         "00A5E3",
         "8DD7BF",
@@ -43,10 +44,10 @@ struct AddPropertyView: View {
         "00B0BA",
         "0065A2",
     ]
-    
     let columns = [
         GridItem(.adaptive(minimum: 40))
     ]
+    let horizontalPadding = CGFloat(30)
     
     init(passedProperty: Property?) {
         if let property = passedProperty {
@@ -122,10 +123,9 @@ struct AddPropertyView: View {
                 Text("Property name is required")
                     .font(.caption)
                     .foregroundColor(name.isEmpty ? .red : .clear)
-                    .padding(.top, 5)
             }
         }
-        .padding(.horizontal, 30)
+        .padding(.horizontal, horizontalPadding)
         .listRowSeparator(.hidden)
     }
     
@@ -134,7 +134,7 @@ struct AddPropertyView: View {
             VStack {
                 HStack {
                     Text("Budget")
-                        .padding(.horizontal, 30)
+                        .padding(.horizontal, horizontalPadding)
                         .foregroundStyle(Color(hex:"B9B9B9"))
                     Spacer()
                 }
@@ -169,7 +169,7 @@ struct AddPropertyView: View {
                     }
                     
                 }
-                .padding(.horizontal, 30)
+                .padding(.horizontal, horizontalPadding)
                 HStack {
                     Text("A budget allows your group to set the price of each item in the property to maintain your budget goals.")
                         .padding(.horizontal, 40)
@@ -178,7 +178,6 @@ struct AddPropertyView: View {
                     Spacer()
                 }
             }
-            .padding(.top, 20)
         }
     }
     
@@ -187,7 +186,7 @@ struct AddPropertyView: View {
             VStack {
                 HStack {
                     Text("Rooms")
-                        .padding(.horizontal, 30)
+                        .padding(.horizontal, horizontalPadding)
                         .foregroundStyle(Color(hex:"B9B9B9"))
                     Spacer()
                 }
@@ -209,9 +208,8 @@ struct AddPropertyView: View {
                     }
                     .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 30)
+                .padding(.horizontal, horizontalPadding)
             }
-            .padding(.top, 20)
         }
     }
     
@@ -248,8 +246,7 @@ struct AddPropertyView: View {
                     .padding(.vertical, 7)
                 }
             }
-            .padding(.horizontal, 30)
-            .padding(.top, 20)
+            .padding(.horizontal, horizontalPadding)
         }
     }
     
@@ -258,7 +255,7 @@ struct AddPropertyView: View {
             ZStack {
                 Color(hex:"292929").ignoresSafeArea()
                 
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 20) {
                     propertyNameSection
                     budgetSection
                     roomPickerSection

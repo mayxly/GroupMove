@@ -40,6 +40,8 @@ struct AddMoveItemView: View {
     
     // UI
     private var stack = CoreDataStack.shared
+    let horizontalPadding = CGFloat(30)
+    @State private var notesPlaceholder = "Notes"
     
     
     init(passedMoveItem: MoveItem?, passedProperty: Property, participants: ParticipantInfoViewModel) {
@@ -76,58 +78,133 @@ struct AddMoveItemView: View {
         }
     }
     
-    var body: some View {
-        NavigationView {
-            Form {
-                Section {
-                    TextField("Item Name", text: $name)
-                        .disabled(priceKeyboardIsFocused)
-                        .onTapGesture {
-                            priceKeyboardIsFocused = false
-                        }
-                        .onChange(of: name) { _ in
-                            hasEditedName = true
-                        }
-                        .alert("Save Error", isPresented: $showingNameError) {
-                        } message: {
-                            Text("Please enter an item name.")
-                        }
-                } footer: {
-                    if hasEditedName {
-                        Text("Item name is required")
-                            .font(.caption)
-                            .foregroundColor(name.isEmpty ? .red : .clear)
-                    }
+    var nameAndNotesSection: some View {
+        Section {
+            ZStack(alignment: .top) {
+                VStack() {
+                    BackgroundRect(height: 200)
                 }
-                Section ("Notes") {
-                    TextEditor(text: $notes)
-                        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 100, maxHeight: .infinity)
-                        .focused($notesKeyboardIsFocused)
-                        .onTapGesture {
-                            priceKeyboardIsFocused = false
-                        }
-                        .toolbar {
-                            if notesKeyboardIsFocused {
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    Spacer()
-                                    Button("Done") {
-                                        notesKeyboardIsFocused.toggle()
+                VStack(spacing: 0) {
+                    ZStack {
+                        Rectangle() // Invisible rect to center elements
+                            .frame(height: 45)
+                            .opacity(0)
+                        TextField("Item Name", text: $name, prompt: Text("Item Name").foregroundColor(Color(hex: "C3C3C3")))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 20)
+                            .disabled(priceKeyboardIsFocused)
+                            .onTapGesture {
+                                priceKeyboardIsFocused = false
+                            }
+                            .onChange(of: name) { _ in
+                                hasEditedName = true
+                            }
+                            .alert("Save Error", isPresented: $showingNameError) {
+                            } message: {
+                                Text("Please enter an item name.")
+                            }
+                    }
+                    Divider().background(Color(hex: "505050"))
+                    ZStack {
+                        Rectangle() // Invisible rect to center elements
+                            .frame(height: 155)
+                            .opacity(0)
+                        ZStack {
+                            if notes.isEmpty { // Used for placeholder text
+                                TextEditor(text: $notesPlaceholder)
+                                    .scrollContentBackground(.hidden)
+                                    .frame(maxWidth: .infinity, maxHeight: 155)
+                                    .foregroundColor(Color(hex: "C3C3C3"))
+                                    .padding(.horizontal, 15)
+                                    .disabled(true)
+                            }
+                            TextEditor(text: $notes)
+                                .scrollContentBackground(.hidden)
+                                .frame(maxWidth: .infinity, minHeight: 155, maxHeight: 155)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 15)
+                                .focused($notesKeyboardIsFocused)
+                                .onTapGesture {
+                                    priceKeyboardIsFocused = false
+                                }
+                                .toolbar {
+                                    if notesKeyboardIsFocused {
+                                        ToolbarItemGroup(placement: .keyboard) {
+                                            Spacer()
+                                            Button("Done") {
+                                                notesKeyboardIsFocused.toggle()
+                                            }
+                                        }
                                     }
                                 }
-                            }
                         }
+                    }
                 }
-                Section {
+            }
+        } footer: {
+            if hasEditedName && name.isEmpty {
+                HStack {
+                    Text("Item name is required")
+                        .font(.caption)
+                        .foregroundColor(name.isEmpty ? .red : .clear)
+                    Spacer()
+                }
+            }
+        }
+        .padding(.horizontal, horizontalPadding)
+    }
+    
+    var priceSection: some View {
+        Section {
+            VStack {
+                HStack {
+                    Text("Price")
+                        .padding(.horizontal, horizontalPadding)
+                        .foregroundStyle(Color(hex:"B9B9B9"))
+                    Spacer()
+                }
+                ZStack {
+                    BackgroundRect(height: 45)
+                    if hasBudget {
+                        PriceTextField(priceAmountText: $priceAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
+                            .padding(.horizontal, 20)
+                            .foregroundStyle(.white)
+                    }
+                }
+                .padding(.horizontal, horizontalPadding)
+            }
+        }
+    }
+    
+    var photoSection: some View {
+        Section {
+            VStack {
+                HStack {
+                    Text("Photo")
+                        .padding(.horizontal, horizontalPadding)
+                        .foregroundStyle(Color(hex:"B9B9B9"))
+                    Spacer()
+                }
+                ZStack() {
+                    BackgroundRect(height: image == nil ? 45 : 600)
+                    
                     Button {
                         self.showingImagePicker = true
                     } label: {
                         if image == nil {
-                            Text("Add a photo")
+                            HStack {
+                                Text("Add Photo")
+                                Spacer()
+                                Image(systemName: "camera")
+                            }
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 20)
                         } else {
                             ZStack {
                                 image?
                                     .resizable()
                                     .scaledToFit()
+                                    .padding(.horizontal, 20)
                                 if image != nil {
                                     VStack {
                                         HStack {
@@ -144,58 +221,118 @@ struct AddMoveItemView: View {
                                         }
                                         Spacer()
                                     }
+                                    .padding(.horizontal, 20)
                                 }
                             }
                         }
                     }
+                    
                 }
-                if hasBudget {
-                    Section("Price") {
-                        PriceTextField(priceAmountText: $priceAmountText, priceKeyboardIsFocused: _priceKeyboardIsFocused)
-                    }
+                .padding(.horizontal, horizontalPadding)
+            }
+        }
+    }
+    
+    var detailsSection: some View {
+        Section {
+            VStack {
+                HStack {
+                    Text("Photo")
+                        .foregroundStyle(Color(hex:"B9B9B9"))
+                    Spacer()
                 }
-                Section("Details") {
-                    Picker("Room", selection: $room) {
-                        if !rooms.isEmpty {
-                            ForEach(rooms, id:\.self) {
-                                Text($0.name ?? "Untitled")
-                            }
-                        } else {
-                            Text("Untitled").tag(Room())
-                        }
+                ZStack(alignment: .top) {
+                    VStack() {
+                        BackgroundRect(height: 90)
                     }
-                    .pickerStyle(.menu)
-                    Picker("Owner", selection: $owner) {
-                        if !userList.isEmpty {
-                            ForEach(userList, id:\.self) {
-                                Text($0)
+                    VStack(spacing: 0) {
+                        ZStack {
+                            Rectangle() // Invisible rect to center elements
+                                .frame(height: 45)
+                                .opacity(0)
+                            HStack {
+                                Text("Room")
+                                    .foregroundStyle(.white)
+                                Spacer()
+                                Picker("Room", selection: $room) {
+                                    if !rooms.isEmpty {
+                                        ForEach(rooms, id:\.self) {
+                                            Text($0.name ?? "Untitled")
+                                        }
+                                    } else {
+                                        Text("Untitled").tag(Room())
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .tint(Color(hex: "1FB1F0"))
                             }
-                        } else {
-                            Text("Untitled").tag(Room())
+                            .padding(.leading, 20)
+                            .padding(.trailing, 10)
                         }
+                        Divider().background(Color(hex: "505050"))
+                        ZStack {
+                            Rectangle() // Invisible rect to center elements
+                                .frame(height: 45)
+                                .opacity(0)
+                            HStack {
+                                Text("Owner")
+                                    .foregroundStyle(.white)
+                                Spacer()
+                                Picker("Owner", selection: $owner) {
+                                    if !userList.isEmpty {
+                                        ForEach(userList, id:\.self) {
+                                            Text($0)
+                                        }
+                                    } else {
+                                        Text("Untitled").tag(Room())
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .tint(Color(hex: "1FB1F0"))
+                            }
+                        }
+                        .padding(.leading, 20)
+                        .padding(.trailing, 10)
                     }
-                    .pickerStyle(.menu)
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel", role: .cancel) {
-                        done()
-                    }.foregroundColor(.red)
+        }
+        .padding(.horizontal, horizontalPadding)
+    }
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color(hex:"292929").ignoresSafeArea()
+                VStack(spacing: 20) {
+                    nameAndNotesSection
+                    priceSection
+                    photoSection
+                    detailsSection
+                    Spacer()
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
-                        hasEditedName = true
-                        if name == "" {
-                            showingNameError.toggle()
-                        } else {
-                            saveItem()
+                
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Cancel", role: .cancel) {
+                            done()
+                        }.foregroundColor(.red)
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") {
+                            hasEditedName = true
+                            if name == "" {
+                                showingNameError.toggle()
+                            } else {
+                                saveItem()
+                            }
                         }
                     }
                 }
-            }
-            .sheet(isPresented: $showingImagePicker, onDismiss: loadImage) {
-              ImagePicker(image: $inputImage)
+                .sheet(isPresented: $showingImagePicker, onDismiss: loadImage) {
+                    ImagePicker(image: $inputImage)
+                }
+                
             }
         }
         .interactiveDismissDisabled()
@@ -245,6 +382,8 @@ extension AddMoveItemView {
     let participants = ParticipantInfoViewModel()
     participants.currUser = "Default User"
     participants.allParticipants = ["Default User"]
+    
+    property.hasBudget = true
     
     return AddMoveItemView(passedMoveItem: nil, passedProperty: property, participants: participants)
 }
