@@ -186,7 +186,7 @@ struct AddMoveItemView: View {
                     Spacer()
                 }
                 ZStack() {
-                    BackgroundRect(height: image == nil ? 45 : 600)
+                    BackgroundRect(height: 45)
                     
                     Button {
                         self.showingImagePicker = true
@@ -205,6 +205,7 @@ struct AddMoveItemView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .padding(.horizontal, 20)
+                                    .padding(.vertical, 20)
                                 if image != nil {
                                     VStack {
                                         HStack {
@@ -213,15 +214,12 @@ struct AddMoveItemView: View {
                                                 self.image = nil
                                                 self.inputImage = nil
                                             }) {
-                                                Image(systemName: "xmark")
-                                                    .foregroundColor(.white)
-                                                    .font(.title)
-                                                    .padding()
+                                                Image("XMarkCircleIcon")
+                                                    .padding(10)
                                             }
                                         }
                                         Spacer()
                                     }
-                                    .padding(.horizontal, 20)
                                 }
                             }
                         }
@@ -237,7 +235,7 @@ struct AddMoveItemView: View {
         Section {
             VStack {
                 HStack {
-                    Text("Photo")
+                    Text("Details")
                         .foregroundStyle(Color(hex:"B9B9B9"))
                     Spacer()
                 }
@@ -304,14 +302,18 @@ struct AddMoveItemView: View {
         NavigationStack {
             ZStack {
                 Color(hex:"292929").ignoresSafeArea()
-                VStack(spacing: 20) {
-                    nameAndNotesSection
-                    priceSection
-                    photoSection
-                    detailsSection
-                    Spacer()
+                ScrollView {
+                    VStack(spacing: 20) {
+                        nameAndNotesSection
+                        if hasBudget {
+                            priceSection
+                        }
+                        photoSection
+                        detailsSection
+                        Spacer()
+                    }
                 }
-                
+                .toolbarBackground(Color(hex:"292929"))
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button("Cancel", role: .cancel) {
@@ -333,6 +335,7 @@ struct AddMoveItemView: View {
                     ImagePicker(image: $inputImage)
                 }
                 
+                
             }
         }
         .interactiveDismissDisabled()
@@ -342,8 +345,8 @@ struct AddMoveItemView: View {
 // MARK: Loading image and creating a new destination
 extension AddMoveItemView {
     private func loadImage() {
-      guard let inputImage = inputImage else { return }
-      image = Image(uiImage: inputImage)
+        guard let inputImage = inputImage else { return }
+        image = Image(uiImage: inputImage)
     }
     
     private func saveItem() {

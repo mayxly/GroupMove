@@ -13,7 +13,17 @@ struct BackgroundRect: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 25)
             .fill(Color(hex: "333333"))
-            .frame(maxWidth: .infinity, maxHeight: CGFloat(height))
+            .frame(maxWidth: .infinity, minHeight: CGFloat(height))
+    }
+}
+
+struct FlexibleBackgroundRect: View {
+    var height: Int = 40
+    
+    var body: some View {
+        RoundedRectangle(cornerRadius: 25)
+            .fill(Color(hex: "333333"))
+            .frame(maxWidth: .infinity, minHeight: CGFloat(height))
     }
 }
 

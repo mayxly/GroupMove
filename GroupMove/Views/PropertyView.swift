@@ -15,6 +15,11 @@ class ParticipantInfoViewModel: ObservableObject {
 }
 
 struct PropertyView: View {
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \Property.dateCreated, ascending: true)],
+        animation: .default)
+    private var homes: FetchedResults<Property>
+    
     // Room properties
     @ObservedObject var pm: PropertyManager = PropertyManager.shared
     @ObservedObject var participants: ParticipantInfoViewModel = ParticipantInfoViewModel()
@@ -24,10 +29,13 @@ struct PropertyView: View {
     // Show sheets
     @State private var showHomesSheet = false
     @State private var showAddItemSheet = false
+    @State private var showNoItemsView = false
     @State private var showEditPropertySheet = false
     let allViews = ["Overview", "Moving List"]
     @State private var selectedView = "Overview"
-    @State private var showEllipsisView = false
+    
+    // Error
+    @State private var failedToDelete = false
     
     // CloudKit Sharing
     @State private var share: CKShare?
@@ -44,15 +52,18 @@ struct PropertyView: View {
         ZStack {
             BackgroundRect(height: 100)
             VStack {
+                let totalBudget = pm.activeProperty!.budget
+                let budgetPercent = CGFloat((usedBudget / totalBudget) * 100)
+                let isOverBudget = usedBudget > totalBudget
                 HStack {
                     Text("Budget Tracker")
                         .foregroundStyle(.white)
                         .bold()
                     Spacer()
-                    Text("$50/$100")
-                        .foregroundStyle(Color(hex: "C3C3C3"))
+                    Text("$\(String(format: "%.2f", usedBudget)) / $\(String(format: "%.2f", totalBudget))")
+                        .foregroundStyle(isOverBudget ? .red : Color(hex: "C3C3C3"))
                 }
-                BudgetProgressBar(height: CGFloat(25))
+                BudgetProgressBar(height: CGFloat(25), percent: budgetPercent, isOverBudget: isOverBudget)
                     .padding(.top, 5)
             }
             .padding(.horizontal, 20)
@@ -99,30 +110,44 @@ struct PropertyView: View {
             }
         }
         .padding(.horizontal, 10)
+        .animation(.easeInOut(duration: 0.3), value: roomItemMap)
     }
     
     var body: some View {
         NavigationView {
             ZStack {
                 Color(hex:"292929").ignoresSafeArea()
-                VStack(spacing: 20) {
-                    CustomSegmentedPicker(options: allViews, selectedOption: $selectedView)
-                    
-                    // No Items
-                    if roomItemMap.count < 1 {
-                        noItemsView
-                    } else {
-                        // Budget
-                        if pm.activeProperty!.hasBudget {
-                            budgetSection
+                ScrollView {
+                    VStack(spacing: 20) {
+                        
+                        CustomSegmentedPicker(options: allViews, selectedOption: $selectedView)
+                        
+                        // No Items
+                        if showNoItemsView {
+                            noItemsView
+                                .opacity(roomItemMap.count < 1 ? 1 : 0)
+                                .transition(.opacity)
+                        } else {
+                            VStack {
+                                // Budget
+                                if pm.activeProperty!.hasBudget {
+                                    budgetSection
+                                }
+                                // Rooms and Items
+                                roomsSection
+                            }
+                            .transition(.opacity)
                         }
-                        // Rooms and Items
-                        roomsSection
+                        Spacer()
                     }
-                    Spacer()
                 }
             }
+            .alert("Delete Error", isPresented: $failedToDelete) {
+            } message: {
+                Text("You must have 1 active home.")
+            }
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color(hex:"292929"))
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Button {
@@ -130,8 +155,10 @@ struct PropertyView: View {
                     } label: {
                         HStack(spacing: 5) {
                             Text(pm.activeProperty!.name ?? "My Home")
-                                .foregroundStyle(.white)    
+                                .foregroundStyle(.white)
                                 .font(Font.custom("SatoshiVariable-Bold_Bold", size: 18))
+                                .transition(.opacity)
+                                .animation(.easeInOut(duration: 0.3))
                             Image(systemName: "chevron.down")
                                 .resizable()
                                 .scaledToFit()
@@ -141,32 +168,32 @@ struct PropertyView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { } label: {
-                        Image(systemName: "ellipsis")
-                            .foregroundStyle(.white)
-                            .onTapGesture {
-                                showEllipsisView.toggle()
+                    HStack {
+                        Button {
+                            addItemButton()
+                        } label: {
+                            Image(systemName: "plus")
+                                .foregroundStyle(.white)
+                        }
+                        .disabled(!stack.canEdit(object: pm.activeProperty!) || !showAddButton)
+                        
+                        Menu {
+                            Button {
+                                showEditPropertySheet.toggle()
+                            } label: {
+                                Text("Edit")
                             }
-                            .popover(isPresented: $showEllipsisView) {
-                                VStack {
-                                    Button {
-                                        showEditPropertySheet.toggle()
-                                    } label: {
-                                        Text("Edit")
-                                    }
-                                }
-                                .presentationCompactAdaptation((.popover))
+                            Button(role: .destructive) {
+                                deleteProperty()
+                            } label: {
+                                Text("Delete Property")
                             }
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .foregroundStyle(.white)
+                        }
+                        .colorScheme(.dark)
                     }
-                    //                    HStack {
-                    //
-                    //                        Button {
-                    //                            addItemButton()
-                    //                        } label: {
-                    //                            Image(systemName: "plus.circle")
-                    //                                .foregroundStyle(Color(hex: "3D3D3D"))
-                    //                        }
-                    //                        .disabled(!stack.canEdit(object: property) || !showAddButton)
                     //                        Button {
                     //                            showShareSheet = true
                     //                        } label: {
@@ -232,6 +259,25 @@ struct PropertyView: View {
 }
 
 extension PropertyView {
+    private func deleteProperty() {
+        if homes.count > 1 {
+            var newHome: Property?
+            for home in homes {
+                if home != pm.activeProperty {
+                    newHome = home
+                    break
+                }
+            }
+            
+            if let newHome = newHome {
+                pm.deleteActiveProperty(newProperty: newHome)
+                generateRoomAndItemMapping()
+                return
+            }
+        }
+        failedToDelete = true
+    }
+    
     private func addItemButton() {
         participants.currUser = getCurrUser()
         participants.allParticipants = getAllParticipants()
@@ -273,6 +319,9 @@ extension PropertyView {
                     }
                 }
             }
+        }
+        withAnimation(.easeInOut(duration: 0.3)) {
+            showNoItemsView = roomItemMap.isEmpty
         }
     }
     
@@ -371,27 +420,26 @@ struct RoomSection: View {
             VStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 25)
                     .fill(Color(hex: "333333"))
-                    .frame(maxWidth: .infinity, maxHeight: isCollapsed ? 60 : CGFloat(60 + items.count * 52 + 8))
+                    .frame(maxWidth: .infinity, maxHeight: isCollapsed ? 60 : CGFloat(60 + items.count * 60 + 8))
             }
             VStack(alignment: .leading) {
-                HStack {
-                    Text(roomName)
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.white)
-                    Spacer()
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.1)) {
-                            hideText.toggle()
-                        }
-                        withAnimation(.bouncy) {
-                            isCollapsed.toggle()
-                        }
-                    }) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        hideText.toggle()
+                    }
+                    withAnimation(.bouncy) {
+                        isCollapsed.toggle()
+                    }
+                } label: {
+                    HStack {
+                        Text(roomName)
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(.white)
+                        Spacer()
                         Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
                             .foregroundColor(.white)
                     }
                 }
-                .padding(.bottom, 10)
                 if !isCollapsed {
                     ForEach(items, id: \.self) { item in
                         ItemNavLink(moveItem: item, propertyView: propertyView)
@@ -399,7 +447,7 @@ struct RoomSection: View {
                     }
                 }
             }
-            .padding(.top, 20)
+            .padding(.vertical, 15)
             .padding(.horizontal, 20)
         }
         .padding(.horizontal, 10)
@@ -415,7 +463,7 @@ struct ItemNavLink: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 30)
                     .fill(Color(hex: "3D3D3D"))
-                    .frame(maxWidth: .infinity, maxHeight: 42)
+                    .frame(maxWidth: .infinity, minHeight: 35)
                 HStack {
                     Text(moveItem.name ?? "Item")
                         .foregroundColor(.white)

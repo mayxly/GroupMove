@@ -5,7 +5,8 @@
 //  Created by Johnny Leung on 2024-05-31.
 //
 
-import Foundation
+import CoreData
+import SwiftUI
 
 class PropertyManager: ObservableObject {
     static let shared = PropertyManager()
@@ -23,6 +24,28 @@ extension PropertyManager {
         activeProperty?.active = false
         activeProperty = property
     
+        stack.save()
+    }
+    
+    func deleteActiveProperty(newProperty: Property) {
+        let stack = CoreDataStack.shared
+        
+        if let items = activeProperty?.items?.allObjects as? [MoveItem] {
+            for item in items {
+                stack.deleteMoveItem(item)
+            }
+        }
+        if let rooms = activeProperty?.rooms?.allObjects as? [Room] {
+            for room in rooms {
+                stack.deleteRoom(room)
+            }
+        }
+        
+        stack.deleteProperty(activeProperty!)
+        
+        newProperty.active = true
+        activeProperty = newProperty
+        
         stack.save()
     }
 }

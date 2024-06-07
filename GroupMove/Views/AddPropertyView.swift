@@ -254,13 +254,14 @@ struct AddPropertyView: View {
         NavigationStack {
             ZStack {
                 Color(hex:"292929").ignoresSafeArea()
-                
-                VStack(alignment: .leading, spacing: 20) {
-                    propertyNameSection
-                    budgetSection
-                    roomPickerSection
-                    colorPickerSection
-                    Spacer()
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        propertyNameSection
+                        budgetSection
+                        roomPickerSection
+                        colorPickerSection
+                        Spacer()
+                    }
                 }
             }
             

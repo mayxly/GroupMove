@@ -33,7 +33,7 @@ struct NewHomeView: View {
                         Spacer()
                     }
                     ScrollView {
-                        ForEach(homes, id: \.self) { home in
+                        ForEach(homes.sorted(by: { $0.active && !$1.active }), id: \.self) { home in
                             HomeNavLink(home: home)
                         }
                         .listRowSpacing(10)
